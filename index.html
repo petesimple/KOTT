@@ -242,30 +242,41 @@
     let rightPlayer = null;
     let waitingPlayer = null;
 
-    window.onload = () => {
-      const rawNames = prompt("Enter all players (comma-separated, at least 3):");
-      const nameList = rawNames ? rawNames.split(",").map(name => name.trim()).filter(name => name) : [];
+   window.onload = () => {
+  let nameList = [];
 
-      if (nameList.length < 3) {
-        alert("King of the Table requires at least 3 players.");
-        return;
-      }
+  while (nameList.length < 3) {
+    const rawNames = prompt("Enter at least 3 player names, comma-separated:");
+    if (!rawNames) {
+      alert("You must enter at least 3 names to start the game.");
+      continue;
+    }
 
-      playerQueue = [...nameList];
-      for (let name of playerQueue) scores[name] = 0;
+    nameList = [...new Set(
+      rawNames.split(",").map(name => name.trim()).filter(name => name)
+    )];
 
-      leftPlayer = playerQueue.shift();
-      rightPlayer = playerQueue.shift();
-      waitingPlayer = playerQueue.shift();
+    if (nameList.length < 3) {
+      alert("You entered fewer than 3 valid names. Try again.");
+    }
+  }
 
-      updateUI();
+  // Initialize queue and scores
+  playerQueue = [...nameList];
+  for (let name of playerQueue) scores[name] = 0;
 
-      if (timerInterval) clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timer++;
-        document.getElementById('timer').textContent = formatTime(timer);
-      }, 1000);
-    };
+  leftPlayer = playerQueue.shift();
+  rightPlayer = playerQueue.shift();
+  waitingPlayer = playerQueue.shift();
+
+  updateUI();
+
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timer++;
+    document.getElementById('timer').textContent = formatTime(timer);
+  }, 1000);
+};
 
     function formatTime(t) {
       const mins = String(Math.floor(t / 60)).padStart(2, '0');
