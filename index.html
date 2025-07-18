@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3Cs Air Hockey</title>
+  <title>King of the Table</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#111111" />
-  <link rel="icon" href="3CSlogo.png" type="image/png">
+  <link rel="icon" href="Kottlogo.png" type="image/png">
   <style>
   body {
     font-family: sans-serif;
@@ -203,7 +203,7 @@
 </head>
 <body>
   <header>
-    <img src="3CSlogoNBG.png" alt="3Cs Logo">
+    <img src="KottlogoNBG.png" alt="3Cs Logo">
     <div>⏱️ <span id="timer">00:00</span></div>
   </header>
 
@@ -235,19 +235,24 @@
     <button id="shareResultsBtn" style="display:none;">📤 Share Results</button>
   </div>
   
-<p id="versionTag" style="margin-top: 10px; font-size: 0.9em; color: #888;">Version 1.3 (names)</p>
+<p id="versionTag" style="margin-top: 10px; font-size: 0.9em; color: #888;">Version beta 1.0 (KOTT)</p>
   
   <div class="timeout" id="timeoutDisplay"></div>
   <div class="log" id="log"></div>
 
   <script>
-    let players = [];
-    let activeLeft, activeRight, waiting;
-    let scores = {}, log = [];
-    let gameStateHistory = [];
-    let timer = 0, timerInterval;
-    let timeoutInterval, timeoutTimeLeft = 0;
+    let playerQueue = []; // Holds all players
+let scores = {}; // Player name -> score
+let log = [];
+let gameStateHistory = [];
+let timer = 0, timerInterval;
+let timeoutInterval, timeoutTimeLeft = 0;
 
+// Active players (always 3 at a time)
+let leftPlayer = null;
+let rightPlayer = null;
+let waitingPlayer = null;
+    
     function startGame(p1, p2, p3) {
       players = [p1, p2, p3];
       scores[p1] = 0;
@@ -300,12 +305,11 @@
     }
 
     function updateUI() {
-  document.getElementById('leftLabel').value = `${activeLeft} (${scores[activeLeft]})`;
-  document.getElementById('rightLabel').value = `${activeRight} (${scores[activeRight]})`;
-  document.getElementById('waitingLabel').value = `${waiting} (${scores[waiting]})`;
+  document.getElementById('leftLabel').value = `${leftPlayer} (${scores[leftPlayer]})`;
+  document.getElementById('rightLabel').value = `${rightPlayer} (${scores[rightPlayer]})`;
+  document.getElementById('waitingLabel').value = `${waitingPlayer} (${scores[waitingPlayer]})`;
   document.getElementById('log').innerHTML = log.map(line => `<div>${line}</div>`).join('');
 }
-
     function undoLast() {
       const lastState = gameStateHistory.pop();
       if (lastState) {
@@ -357,15 +361,32 @@
     }
 
     window.onload = () => {
-      const p1 = prompt("Enter Player 1: Left");
-      const p2 = prompt("Enter Player 2: Right");
-      const p3 = prompt("Enter Player 3: Next");
-      if (p1 && p2 && p3) {
-        startGame(p1, p2, p3);
-      } else {
-        alert("Game requires 3 players.");
-      }
-    }
+  const rawNames = prompt("Enter all players (comma-separated, at least 3):");
+  const nameList = rawNames ? rawNames.split(",").map(name => name.trim()).filter(name => name) : [];
+
+  if (nameList.length < 3) {
+    alert("King of the Table requires at least 3 players.");
+    return;
+  }
+
+  // Initialize queue and scores
+  playerQueue = [...nameList];
+  for (let name of playerQueue) scores[name] = 0;
+
+  // Set initial active players
+  leftPlayer = playerQueue.shift();
+  rightPlayer = playerQueue.shift();
+  waitingPlayer = playerQueue.shift();
+
+  updateUI();
+
+  document.getElementById('swapButton').style.display = 'inline-block';
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timer++;
+    document.getElementById('timer').textContent = formatTime(timer);
+  }, 1000);
+};
 
     function checkWinner() {
   for (const player of players) {
