@@ -1,0 +1,20 @@
+{
+  "name": "King of the Table",
+  "short_name": "KOTT",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "Kottlogo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "Kottlogo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
