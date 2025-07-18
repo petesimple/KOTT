@@ -280,6 +280,46 @@
       document.getElementById('log').innerHTML = log.map(line => `<div>${line}</div>`).join('');
     }
 
+    function score(side) {
+  // Save current state for undo
+  gameStateHistory.push({
+    leftPlayer,
+    rightPlayer,
+    waitingPlayer,
+    playerQueue: [...playerQueue],
+    scores: { ...scores }
+  });
+
+  const scorer = side === 'left' ? leftPlayer : rightPlayer;
+  const loser = side === 'left' ? rightPlayer : leftPlayer;
+
+  // Blue Shell Rule: if player has 6 and gets scored on, reset to 0
+  if (scores[loser] === 6) {
+    scores[loser] = 0;
+    log.push(`${formatTime(timer)} – 💥 ${scorer} hit ${loser} with a BLUE SHELL! Score reset to 0.`);
+  } else {
+    scores[scorer]++;
+    log.push(`${formatTime(timer)} – ${scorer} scored on ${loser}.`);
+  }
+
+  // Rotate loser out, waiting comes in
+  const rotatedOut = loser;
+  const newActive = waitingPlayer;
+  waitingPlayer = playerQueue.shift() || rotatedOut; // If no one left in queue, reinsert loser
+
+  if (side === 'left') {
+    rightPlayer = newActive;
+  } else {
+    leftPlayer = newActive;
+  }
+
+  // Add rotated out player to the end of the queue
+  playerQueue.push(rotatedOut);
+
+  updateUI();
+  checkWinner();
+}
+
     function undoLast() {
       const lastState = gameStateHistory.pop();
       if (lastState) {
