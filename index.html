@@ -225,6 +225,8 @@
     <button onclick="resetGame()">Reset Game</button>
     <button onclick="undoLast()">Undo Last</button>
     <button onclick="startTimeout()">Time Out</button>
+    <button onclick="addPlayer()">Add Player</button>
+    <button onclick="removePlayer()">Remove Player</button>
     <button id="shareResultsBtn" style="display:none;">📤 Share Results</button>
   </div>
 
@@ -422,6 +424,40 @@
         }
       }
     }
+    function addPlayer() {
+  const newName = prompt("Enter new player's name:");
+  if (!newName) return;
+
+  const name = newName.trim();
+  if (!name) return alert("Invalid name.");
+  if ([leftPlayer, rightPlayer, waitingPlayer, ...playerQueue].includes(name)) {
+    return alert("Player already exists.");
+  }
+
+  scores[name] = 0;
+  playerQueue.push(name);
+  log.push(`${formatTime(timer)} – ${name} added to the rotation.`);
+  updateUI();
+}
+
+function removePlayer() {
+  const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
+  const nameToRemove = prompt(`Enter the name of the player to remove:\n${allPlayers.join(", ")}`);
+  if (!nameToRemove) return;
+
+  const name = nameToRemove.trim();
+  if (!allPlayers.includes(name)) return alert("Player not found.");
+
+  if (name === leftPlayer || name === rightPlayer || name === waitingPlayer) {
+    alert("Cannot remove an active player. Wait until they rotate out.");
+    return;
+  }
+
+  playerQueue = playerQueue.filter(p => p !== name);
+  delete scores[name];
+  log.push(`${formatTime(timer)} – ${name} removed from the rotation.`);
+  updateUI();
+}
   </script>
 </body>
 </html>
