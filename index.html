@@ -219,6 +219,8 @@
     <input class="player-label" id="waitingLabel" placeholder="Up Next">
   </div>
 
+  <div id="playerQueueDisplay" style="margin-top: 20px; font-size: 1em;"></div>
+
   <div class="controls">
     <button onclick="resetGame()">Reset Game</button>
     <button onclick="undoLast()">Undo Last</button>
@@ -285,11 +287,28 @@
     }
 
     function updateUI() {
-      document.getElementById('leftLabel').value = `${leftPlayer} (${scores[leftPlayer]})`;
-      document.getElementById('rightLabel').value = `${rightPlayer} (${scores[rightPlayer]})`;
-      document.getElementById('waitingLabel').value = `${waitingPlayer} (${scores[waitingPlayer]})`;
-      document.getElementById('log').innerHTML = log.map(line => `<div>${line}</div>`).join('');
-    }
+  // Update main labels
+  document.getElementById('leftLabel').value = `${leftPlayer} (${scores[leftPlayer]})`;
+  document.getElementById('rightLabel').value = `${rightPlayer} (${scores[rightPlayer]})`;
+  document.getElementById('waitingLabel').value = `${waitingPlayer} (${scores[waitingPlayer]})`;
+
+  // Update event log
+  document.getElementById('log').innerHTML = log.map(line => `<div>${line}</div>`).join('');
+
+  // Display full queue with roles
+  const queueHTML = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue]
+    .map((name, index) => {
+      let label = '';
+      if (name === leftPlayer) label = '🔴 Left';
+      else if (name === rightPlayer) label = '🟡 Right';
+      else if (name === waitingPlayer) label = '🟢 Waiting';
+      else label = `#${index - 2 + 1}`; // position in queue (after 3 actives)
+      return `<div>${label}: ${name} (${scores[name]})</div>`;
+    }).join('');
+
+  document.getElementById('playerQueueDisplay').innerHTML =
+    `<strong>Rotation Order:</strong><br>${queueHTML}`;
+}
 
     function score(side) {
   // Save current state for undo
