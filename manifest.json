@@ -7,12 +7,12 @@
   "theme_color": "#111111",
   "icons": [
     {
-      "src": "Kottlogo192.png",
+      "src": "Kottlogodark192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "Kottlogo512.png",
+      "src": "Kottlogodark512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
