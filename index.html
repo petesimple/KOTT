@@ -280,6 +280,10 @@
     timer++;
     document.getElementById('timer').textContent = formatTime(timer);
   }, 1000);
+  document.querySelectorAll('.player-label').forEach(input => {
+  input.addEventListener('pointerdown', e => e.stopPropagation());
+  input.addEventListener('click', e => e.stopPropagation());
+});
 };
 
     function formatTime(t) {
