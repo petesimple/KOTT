@@ -278,6 +278,10 @@
     let firstScoreOccurred = false;
 
    window.onload = () => {
+  document.body.addEventListener('click', initGameOnce, { once: true });
+};
+
+function initGameOnce() {
   let nameList = [];
 
   while (nameList.length < 3) {
@@ -311,11 +315,13 @@
     timer++;
     document.getElementById('timer').textContent = formatTime(timer);
   }, 1000);
+
+  // Defensive: this should be removed since no more inputs, but safe to keep
   document.querySelectorAll('.player-label').forEach(input => {
-  input.addEventListener('pointerdown', e => e.stopPropagation());
-  input.addEventListener('click', e => e.stopPropagation());
-});
-};
+    input.addEventListener('pointerdown', e => e.stopPropagation());
+    input.addEventListener('click', e => e.stopPropagation());
+  });
+}
 
     function formatTime(t) {
       const mins = String(Math.floor(t / 60)).padStart(2, '0');
