@@ -59,26 +59,21 @@
     }
 
     .player-label {
-      position: relative;
-      z-index: 2;
-      color: black;
-      font-weight: 900;
-      font-size: 1.5em;
-      text-align: center;
-      padding: 0 10px;
-      background: transparent;
-      border: none;
-      width: 90%;
-      white-space: normal;
-      word-break: break-word;
-      line-height: 1.2;
-      min-height: 2.5em;
-    }
-
-    .player-label:focus {
-      outline: none;
-      background: rgba(255,255,255,0.2);
-    }
+  position: relative;
+  z-index: 2;
+  color: black;
+  font-weight: 900;
+  font-size: 1.5em;
+  text-align: center;
+  padding: 0 10px;
+  background: transparent;
+  width: 90%;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.2;
+  min-height: 2.5em;
+  pointer-events: none; /* ⬅️ New: makes taps go to the puck instead */
+}
 
     .controls {
       margin-top: 1.5em;
@@ -228,23 +223,23 @@
     <div>⏱️ <span id="timer">00:00</span></div>
   </header>
 
-  <div class="players">
-    <div class="player-box" id="leftBox" onclick="score('left')">
-      <div class="puck-inner"></div>
-      <input class="player-label" id="leftLabel" placeholder="Left Player">
-    </div>
-
-    <div class="player-box" id="rightBox" onclick="score('right')">
-      <div class="puck-inner"></div>
-      <input class="player-label" id="rightLabel" placeholder="Right Player">
-    </div>
+ <div class="players">
+  <div class="player-box" id="leftBox" onclick="score('left')">
+    <div class="puck-inner"></div>
+    <div class="player-label" id="leftLabel"></div>
   </div>
 
-  <div class="waiting-puck" id="waitingBox">
-    <div class="puck-inner tape"></div>
-    <input class="player-label" id="waitingLabel" placeholder="Up Next">
+  <div class="player-box" id="rightBox" onclick="score('right')">
+    <div class="puck-inner"></div>
+    <div class="player-label" id="rightLabel"></div>
   </div>
+</div>
 
+<div class="waiting-puck" id="waitingBox">
+  <div class="puck-inner tape"></div>
+  <div class="player-label" id="waitingLabel"></div>
+</div>
+  
   <div id="playerQueueDisplay" style="margin-top: 20px; font-size: 1em;"></div>
 
   <div class="controls">
@@ -256,7 +251,7 @@
     <button id="shareResultsBtn" style="display:none;">📤 Share Results</button>
   </div>
 
-  <p id="versionTag">Version beta 1.1 (KOTT)</p>
+  <p id="versionTag">Version beta 1.2 (KOTT)</p>
   <div class="timeout" id="timeoutDisplay"></div>
   <div class="log" id="log"></div>
 
@@ -320,9 +315,9 @@
 
     function updateUI() {
   // Update main labels
-  document.getElementById('leftLabel').value = `${leftPlayer} (${scores[leftPlayer]})`;
-  document.getElementById('rightLabel').value = `${rightPlayer} (${scores[rightPlayer]})`;
-  document.getElementById('waitingLabel').value = `${waitingPlayer} (${scores[waitingPlayer]})`;
+document.getElementById('leftLabel').textContent = `${leftPlayer} (${scores[leftPlayer]})`;
+document.getElementById('rightLabel').textContent = `${rightPlayer} (${scores[rightPlayer]})`;
+document.getElementById('waitingLabel').textContent = `${waitingPlayer} (${scores[waitingPlayer]})`;
 
   // Add or remove blue glow
   const leftBox = document.getElementById('leftBox');
