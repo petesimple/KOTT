@@ -188,6 +188,25 @@
         font-size: 1.2em;
       }
     }
+    .blue-shell-ready {
+  background: #00f !important;
+  box-shadow: 0 0 20px 10px rgba(0, 0, 255, 0.7);
+}
+
+.firework {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: url('blue-shell.png') no-repeat center center;
+  background-size: contain;
+  animation: explode 0.8s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes explode {
+  0% { opacity: 1; transform: scale(1) translate(0, 0); }
+  100% { opacity: 0; transform: scale(2) translate(var(--x, 0px), var(--y, 0px)); }
+}
   </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -298,6 +317,13 @@
   document.getElementById('rightLabel').value = `${rightPlayer} (${scores[rightPlayer]})`;
   document.getElementById('waitingLabel').value = `${waitingPlayer} (${scores[waitingPlayer]})`;
 
+  // Add or remove blue glow
+  const leftBox = document.getElementById('leftBox');
+  const rightBox = document.getElementById('rightBox');
+
+  leftBox.classList.toggle('blue-shell-ready', scores[leftPlayer] === 6);
+  rightBox.classList.toggle('blue-shell-ready', scores[rightPlayer] === 6);
+
   // Update event log
   document.getElementById('log').innerHTML = log.map(line => `<div>${line}</div>`).join('');
 
@@ -308,7 +334,7 @@
       if (name === leftPlayer) label = '🔴 Left';
       else if (name === rightPlayer) label = '🟡 Right';
       else if (name === waitingPlayer) label = '🟢 Waiting';
-      else label = `#${index - 2 + 1}`; // position in queue (after 3 actives)
+      else label = `#${index - 2 + 1}`;
       return `<div>${label}: ${name} (${scores[name]})</div>`;
     }).join('');
 
@@ -317,7 +343,6 @@
 }
 
     function score(side) {
-  // Save current state for undo
   gameStateHistory.push({
     leftPlayer,
     rightPlayer,
@@ -329,21 +354,22 @@
   const scorer = side === 'left' ? leftPlayer : rightPlayer;
   const loser = side === 'left' ? rightPlayer : leftPlayer;
 
-  // Always increment scorer's score
-  scores[scorer]++;
+  scores[scorer]++; // Always score
 
-  // Blue Shell Rule: if player has 6 and gets scored on, reset to 0
   if (scores[loser] === 6) {
     scores[loser] = 0;
     log.push(`${formatTime(timer)} – ${scorer} scored on ${loser} and triggered a 💥 BLUE SHELL!`);
+
+    // 🔹 Launch shell fireworks on loser
+    const targetBoxId = side === 'left' ? 'rightBox' : 'leftBox';
+    launchBlueShellFireworks(targetBoxId);
   } else {
     log.push(`${formatTime(timer)} – ${scorer} scored on ${loser}.`);
   }
 
-  // Rotate loser out, waiting comes in
   const rotatedOut = loser;
   const newActive = waitingPlayer;
-  waitingPlayer = playerQueue.shift() || rotatedOut; // If no one left in queue, reinsert loser
+  waitingPlayer = playerQueue.shift() || rotatedOut;
 
   if (side === 'left') {
     rightPlayer = newActive;
@@ -351,7 +377,6 @@
     leftPlayer = newActive;
   }
 
-  // Add rotated out player to the end of the queue
   playerQueue.push(rotatedOut);
 
   updateUI();
@@ -463,6 +488,19 @@ function removePlayer() {
   delete scores[name];
   log.push(`${formatTime(timer)} – ${name} removed from the rotation.`);
   updateUI();
+}
+    function launchBlueShellFireworks(targetBoxId) {
+  const box = document.getElementById(targetBoxId);
+  for (let i = 0; i < 6; i++) {
+    const shell = document.createElement('div');
+    shell.className = 'firework';
+    shell.style.left = `${Math.random() * box.offsetWidth}px`;
+    shell.style.top = `${Math.random() * box.offsetHeight}px`;
+    shell.style.setProperty('--x', `${(Math.random() - 0.5) * 200}px`);
+    shell.style.setProperty('--y', `${(Math.random() - 0.5) * 200}px`);
+    box.appendChild(shell);
+    setTimeout(() => shell.remove(), 800);
+  }
 }
   </script>
 </body>
