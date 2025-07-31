@@ -329,12 +329,14 @@
   const scorer = side === 'left' ? leftPlayer : rightPlayer;
   const loser = side === 'left' ? rightPlayer : leftPlayer;
 
+  // Always increment scorer's score
+  scores[scorer]++;
+
   // Blue Shell Rule: if player has 6 and gets scored on, reset to 0
   if (scores[loser] === 6) {
     scores[loser] = 0;
-    log.push(`${formatTime(timer)} – 💥 ${scorer} hit ${loser} with a BLUE SHELL! Score reset to 0.`);
+    log.push(`${formatTime(timer)} – ${scorer} scored on ${loser} and triggered a 💥 BLUE SHELL!`);
   } else {
-    scores[scorer]++;
     log.push(`${formatTime(timer)} – ${scorer} scored on ${loser}.`);
   }
 
