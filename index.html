@@ -195,17 +195,24 @@
 
 .firework {
   position: absolute;
-  width: 30px;
-  height: 30px;
+  width: 60px;
+  height: 60px;
   background: url('blue-shell.png') no-repeat center center;
   background-size: contain;
-  animation: explode 0.8s ease-out forwards;
+  animation: explode 1s ease-out forwards;
   pointer-events: none;
+  z-index: 999;
 }
 
 @keyframes explode {
-  0% { opacity: 1; transform: scale(1) translate(0, 0); }
-  100% { opacity: 0; transform: scale(2) translate(var(--x, 0px), var(--y, 0px)); }
+  0% {
+    opacity: 1;
+    transform: scale(1) translate(0, 0);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(3) translate(var(--x, 0px), var(--y, 0px));
+  }
 }
   </style>
   <script>
@@ -491,15 +498,15 @@ function removePlayer() {
 }
     function launchBlueShellFireworks(targetBoxId) {
   const box = document.getElementById(targetBoxId);
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 8; i++) {
     const shell = document.createElement('div');
     shell.className = 'firework';
-    shell.style.left = `${Math.random() * box.offsetWidth}px`;
-    shell.style.top = `${Math.random() * box.offsetHeight}px`;
-    shell.style.setProperty('--x', `${(Math.random() - 0.5) * 200}px`);
-    shell.style.setProperty('--y', `${(Math.random() - 0.5) * 200}px`);
+    shell.style.left = `${Math.random() * (box.offsetWidth - 60)}px`;
+    shell.style.top = `${Math.random() * (box.offsetHeight - 60)}px`;
+    shell.style.setProperty('--x', `${(Math.random() - 0.5) * 300}px`);
+    shell.style.setProperty('--y', `${(Math.random() - 0.5) * 300}px`);
     box.appendChild(shell);
-    setTimeout(() => shell.remove(), 800);
+    setTimeout(() => shell.remove(), 1000);
   }
 }
   </script>
