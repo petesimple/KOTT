@@ -250,6 +250,7 @@
 
   <div class="controls">
     <button id="swapBtn" onclick="swapSides()">Swap Sides</button>
+    <button onclick="restartSamePlayers()">Restart Game</button>
     <button onclick="resetGame()">Reset Game</button>
     <button onclick="undoLast()">Undo Last</button>
     <button onclick="startTimeout()">Time Out</button>
@@ -526,6 +527,42 @@ function removePlayer() {
   rightPlayer = temp;
 
   log.push(`${formatTime(timer)} – 🔄 Sides swapped: ${leftPlayer} is now on the left, ${rightPlayer} on the right.`);
+
+  updateUI();
+}
+    function restartSamePlayers() {
+  const confirmRestart = confirm("Are you sure you want to restart the game with the same players?");
+  if (!confirmRestart) return;
+
+  // Reset all state but preserve player names
+  const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
+
+  // Reset globals
+  playerQueue = [...allPlayers];
+  scores = {};
+  log = [];
+  gameStateHistory = [];
+  firstScoreOccurred = false;
+
+  // Reassign roles
+  leftPlayer = playerQueue.shift();
+  rightPlayer = playerQueue.shift();
+  waitingPlayer = playerQueue.shift();
+
+  for (const name of [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue]) {
+    scores[name] = 0;
+  }
+
+  // Reset timer
+  timer = 0;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timer++;
+    document.getElementById('timer').textContent = formatTime(timer);
+  }, 1000);
+
+  // Show swap button again
+  document.getElementById('swapBtn').style.display = 'inline-block';
 
   updateUI();
 }
