@@ -361,7 +361,7 @@ document.getElementById('waitingLabel').textContent = `${waitingPlayer} (${score
 }
 
     function score(side) {
-      if (!firstScoreOccurred) {
+  if (!firstScoreOccurred) {
     firstScoreOccurred = true;
     document.getElementById('swapBtn').style.display = 'none';
   }
@@ -376,22 +376,23 @@ document.getElementById('waitingLabel').textContent = `${waitingPlayer} (${score
   const scorer = side === 'left' ? leftPlayer : rightPlayer;
   const loser = side === 'left' ? rightPlayer : leftPlayer;
 
-  scores[scorer]++; // Always score
+  scores[scorer]++;
 
   if (scores[loser] === 6) {
     scores[loser] = 0;
-    log.push(`${formatTime(timer)} – ${scorer} scored on ${loser} and triggered a 💥 BLUE SHELL!`);
-
-    // 🔹 Launch shell fireworks on loser
+    log.push(`${formatTime(timer)} - ${scorer} scored on ${loser} and triggered a 💥 BLUE SHELL!`);
     const targetBoxId = side === 'left' ? 'rightBox' : 'leftBox';
     launchBlueShellFireworks(targetBoxId);
   } else {
-    log.push(`${formatTime(timer)} – ${scorer} scored on ${loser}.`);
+    log.push(`${formatTime(timer)} - ${scorer} scored on ${loser}.`);
   }
 
   const rotatedOut = loser;
   const newActive = waitingPlayer;
-  waitingPlayer = playerQueue.shift() || rotatedOut;
+
+  // decide next waiting - only consume queue if it has someone
+  const usedFromQueue = playerQueue.length > 0;
+  waitingPlayer = usedFromQueue ? playerQueue.shift() : rotatedOut;
 
   if (side === 'left') {
     rightPlayer = newActive;
@@ -399,7 +400,12 @@ document.getElementById('waitingLabel').textContent = `${waitingPlayer} (${score
     leftPlayer = newActive;
   }
 
-  playerQueue.push(rotatedOut);
+  // only enqueue the loser if we actually pulled someone from the queue
+  if (usedFromQueue) {
+    playerQueue.push(rotatedOut);
+    // sanitize: ensure no duplicates in queue
+playerQueue = playerQueue.filter((p, i, arr) => arr.indexOf(p) === i && ![leftPlayer, rightPlayer, waitingPlayer].includes(p));
+  }
 
   updateUI();
   checkWinner();
