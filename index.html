@@ -277,9 +277,7 @@
 
     let firstScoreOccurred = false;
 
-   window.onload = () => {
-  document.body.addEventListener('click', initGameOnce, { once: true });
-};
+   window.onload = initGameOnce;
 
 function initGameOnce() {
   let nameList = [];
