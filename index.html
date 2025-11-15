@@ -43,6 +43,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
     }
 
     #rightBox {
@@ -59,27 +60,34 @@
     }
 
     .player-label {
-  position: relative;
-  z-index: 2;
-  color: black;
-  font-weight: 900;
-  font-size: 1.5em;
-  text-align: center;
-  padding: 0 10px;
-  background: transparent;
-  width: 90%;
-  white-space: normal;
-  word-break: break-word;
-  line-height: 1.2;
-  min-height: 2.5em;
-  pointer-events: none; /* ⬅️ New: makes taps go to the puck instead */
-}
-    .player-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
+      position: relative;
+      z-index: 2;
+      color: black;
+      font-weight: 900;
+      font-size: 1.5em;
+      text-align: center;
+      padding: 0 10px;
+      background: transparent;
+      width: 90%;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.2;
+      min-height: 2.5em;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .shell-icon {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      background: url('blue-shell.png') no-repeat center center;
+      background-size: contain;
+      margin-left: 4px;
+    }
 
     .controls {
       margin-top: 1.5em;
@@ -141,6 +149,7 @@
       justify-content: center;
       position: relative;
       cursor: default;
+      overflow: hidden;
     }
 
     .waiting-puck .player-label {
@@ -189,32 +198,73 @@
         font-size: 1.2em;
       }
     }
+
     .blue-shell-ready {
-  background: #00f !important;
-  box-shadow: 0 0 20px 10px rgba(0, 0, 255, 0.7);
-}
+      background: #00f !important;
+      box-shadow: 0 0 20px 10px rgba(0, 0, 255, 0.7);
+    }
 
-.firework {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  background: url('blue-shell.png') no-repeat center center;
-  background-size: contain;
-  animation: explode 1s ease-out forwards;
-  pointer-events: none;
-  z-index: 999;
-}
+    .firework {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: url('blue-shell.png') no-repeat center center;
+      background-size: contain;
+      animation: explode 1s ease-out forwards;
+      pointer-events: none;
+      z-index: 999;
+    }
 
-@keyframes explode {
-  0% {
-    opacity: 1;
-    transform: scale(1) translate(0, 0);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(3) translate(var(--x, 0px), var(--y, 0px));
-  }
-}
+    @keyframes explode {
+      0% {
+        opacity: 1;
+        transform: scale(1) translate(0, 0);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(3) translate(var(--x, 0px), var(--y, 0px));
+      }
+    }
+
+    /* Graffiti win overlay */
+
+    .graffiti-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 2000;
+      overflow: hidden;
+    }
+
+    .graffiti-word {
+      position: absolute;
+      font-size: 3rem;
+      font-weight: 900;
+      color: #ff00ff;
+      text-shadow:
+        2px 2px 0 #00ffff,
+        -2px -2px 0 #ffff00,
+        0 0 10px #ffffff;
+      animation: graffiti-pop 1.1s ease-out forwards;
+    }
+
+    @keyframes graffiti-pop {
+      0% {
+        opacity: 0;
+        transform: scale(0.2) rotate(-20deg);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.1) rotate(5deg);
+      }
+      100% {
+        opacity: 0;
+        transform: scale(2) rotate(15deg);
+      }
+    }
   </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -229,22 +279,22 @@
     <div>⏱️ <span id="timer">00:00</span></div>
   </header>
 
- <div class="players">
-  <div class="player-box" id="leftBox" onclick="score('left')">
-    <div class="puck-inner"></div>
-    <div class="player-label" id="leftLabel"></div>
+  <div class="players">
+    <div class="player-box" id="leftBox" onclick="score('left')">
+      <div class="puck-inner"></div>
+      <div class="player-label" id="leftLabel"></div>
+    </div>
+
+    <div class="player-box" id="rightBox" onclick="score('right')">
+      <div class="puck-inner"></div>
+      <div class="player-label" id="rightLabel"></div>
+    </div>
   </div>
 
-  <div class="player-box" id="rightBox" onclick="score('right')">
-    <div class="puck-inner"></div>
-    <div class="player-label" id="rightLabel"></div>
+  <div class="waiting-puck" id="waitingBox">
+    <div class="puck-inner tape"></div>
+    <div class="player-label" id="waitingLabel"></div>
   </div>
-</div>
-
-<div class="waiting-puck" id="waitingBox">
-  <div class="puck-inner tape"></div>
-  <div class="player-label" id="waitingLabel"></div>
-</div>
   
   <div id="playerQueueDisplay" style="margin-top: 20px; font-size: 1em;"></div>
 
@@ -259,13 +309,14 @@
     <button id="shareResultsBtn" style="display:none;">📤 Share Results</button>
   </div>
 
-  <p id="versionTag">Version beta 1.3.1 (KOTT)</p>
+  <p id="versionTag">Version beta 1.4.1 (KOTT blue shell x3)</p>
   <div class="timeout" id="timeoutDisplay"></div>
   <div class="log" id="log"></div>
 
   <script>
     let playerQueue = [];
     let scores = {};
+    let blueShells = {}; // per player blue shell collection
     let log = [];
     let gameStateHistory = [];
     let timer = 0, timerInterval;
@@ -276,50 +327,56 @@
     let waitingPlayer = null;
 
     let firstScoreOccurred = false;
+    let gameOver = false;
 
-   window.onload = initGameOnce;
+    window.onload = initGameOnce;
 
-function initGameOnce() {
-  let nameList = [];
+    function initGameOnce() {
+      let nameList = [];
 
-  while (nameList.length < 3) {
-    const rawNames = prompt("Enter at least 3 player names, comma-separated:");
-    if (!rawNames) {
-      alert("You must enter at least 3 names to start the game.");
-      continue;
+      while (nameList.length < 3) {
+        const rawNames = prompt("Enter at least 3 player names, comma-separated:");
+        if (!rawNames) {
+          alert("You must enter at least 3 names to start the game.");
+          continue;
+        }
+
+        nameList = [...new Set(
+          rawNames.split(",").map(name => name.trim()).filter(name => name)
+        )];
+
+        if (nameList.length < 3) {
+          alert("You entered fewer than 3 valid names. Try again.");
+        }
+      }
+
+      // Initialize queue, scores, blue shell counters
+      playerQueue = [...nameList];
+      scores = {};
+      blueShells = {};
+      for (let name of playerQueue) {
+        scores[name] = 0;
+        blueShells[name] = 0;
+      }
+
+      leftPlayer = playerQueue.shift();
+      rightPlayer = playerQueue.shift();
+      waitingPlayer = playerQueue.shift();
+
+      gameOver = false;
+      updateUI();
+
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timer++;
+        document.getElementById('timer').textContent = formatTime(timer);
+      }, 1000);
+
+      document.querySelectorAll('.player-label').forEach(input => {
+        input.addEventListener('pointerdown', e => e.stopPropagation());
+        input.addEventListener('click', e => e.stopPropagation());
+      });
     }
-
-    nameList = [...new Set(
-      rawNames.split(",").map(name => name.trim()).filter(name => name)
-    )];
-
-    if (nameList.length < 3) {
-      alert("You entered fewer than 3 valid names. Try again.");
-    }
-  }
-
-  // Initialize queue and scores
-  playerQueue = [...nameList];
-  for (let name of playerQueue) scores[name] = 0;
-
-  leftPlayer = playerQueue.shift();
-  rightPlayer = playerQueue.shift();
-  waitingPlayer = playerQueue.shift();
-
-  updateUI();
-
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    timer++;
-    document.getElementById('timer').textContent = formatTime(timer);
-  }, 1000);
-
-  // Defensive: this should be removed since no more inputs, but safe to keep
-  document.querySelectorAll('.player-label').forEach(input => {
-    input.addEventListener('pointerdown', e => e.stopPropagation());
-    input.addEventListener('click', e => e.stopPropagation());
-  });
-}
 
     function formatTime(t) {
       const mins = String(Math.floor(t / 60)).padStart(2, '0');
@@ -327,87 +384,109 @@ function initGameOnce() {
       return `${mins}:${secs}`;
     }
 
+    function makeShellIcons(count) {
+      let html = "";
+      for (let i = 0; i < count; i++) {
+        html += '<span class="shell-icon"></span>';
+      }
+      return html;
+    }
+
     function updateUI() {
-  // Update main labels
-document.getElementById('leftLabel').textContent = `${leftPlayer} (${scores[leftPlayer]})`;
-document.getElementById('rightLabel').textContent = `${rightPlayer} (${scores[rightPlayer]})`;
-document.getElementById('waitingLabel').textContent = `${waitingPlayer} (${scores[waitingPlayer]})`;
+      const leftShells = blueShells[leftPlayer] || 0;
+      const rightShells = blueShells[rightPlayer] || 0;
+      const waitingShells = blueShells[waitingPlayer] || 0;
 
-  // Add or remove blue glow
-  const leftBox = document.getElementById('leftBox');
-  const rightBox = document.getElementById('rightBox');
+      document.getElementById('leftLabel').innerHTML =
+        `${leftPlayer} (${scores[leftPlayer]}) ${makeShellIcons(leftShells)}`;
+      document.getElementById('rightLabel').innerHTML =
+        `${rightPlayer} (${scores[rightPlayer]}) ${makeShellIcons(rightShells)}`;
+      document.getElementById('waitingLabel').innerHTML =
+        `${waitingPlayer} (${scores[waitingPlayer]}) ${makeShellIcons(waitingShells)}`;
 
-  leftBox.classList.toggle('blue-shell-ready', scores[leftPlayer] === 6);
-  rightBox.classList.toggle('blue-shell-ready', scores[rightPlayer] === 6);
+      const leftBox = document.getElementById('leftBox');
+      const rightBox = document.getElementById('rightBox');
 
-  // Update event log
-  document.getElementById('log').innerHTML = log.map(line => `<div>${line}</div>`).join('');
+      leftBox.classList.toggle('blue-shell-ready', scores[leftPlayer] === 6);
+      rightBox.classList.toggle('blue-shell-ready', scores[rightPlayer] === 6);
 
-  // Display full queue with roles
-  const queueHTML = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue]
-    .map((name, index) => {
-      let label = '';
-      if (name === leftPlayer) label = '🔴 Left';
-      else if (name === rightPlayer) label = '🟡 Right';
-      else if (name === waitingPlayer) label = '🟢 Waiting';
-      else label = `#${index - 2 + 1}`;
-      return `<div>${label}: ${name} (${scores[name]})</div>`;
-    }).join('');
+      document.getElementById('log').innerHTML =
+        log.map(line => `<div>${line}</div>`).join('');
 
-  document.getElementById('playerQueueDisplay').innerHTML =
-    `<strong>Rotation Order:</strong><br>${queueHTML}`;
-}
+      const queueHTML = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue]
+        .map((name, index) => {
+          let label = '';
+          if (name === leftPlayer) label = '🔴 Left';
+          else if (name === rightPlayer) label = '🟡 Right';
+          else if (name === waitingPlayer) label = '🟢 Waiting';
+          else label = `#${index - 2 + 1}`;
+          return `<div>${label}: ${name} (${scores[name]})</div>`;
+        }).join('');
+
+      document.getElementById('playerQueueDisplay').innerHTML =
+        `<strong>Rotation Order:</strong><br>${queueHTML}`;
+    }
 
     function score(side) {
-  if (!firstScoreOccurred) {
-    firstScoreOccurred = true;
-    document.getElementById('swapBtn').style.display = 'none';
-  }
-  gameStateHistory.push({
-    leftPlayer,
-    rightPlayer,
-    waitingPlayer,
-    playerQueue: [...playerQueue],
-    scores: { ...scores }
-  });
+      if (gameOver) return;
 
-  const scorer = side === 'left' ? leftPlayer : rightPlayer;
-  const loser = side === 'left' ? rightPlayer : leftPlayer;
+      if (!firstScoreOccurred) {
+        firstScoreOccurred = true;
+        document.getElementById('swapBtn').style.display = 'none';
+      }
 
-  scores[scorer]++;
+      gameStateHistory.push({
+        leftPlayer,
+        rightPlayer,
+        waitingPlayer,
+        playerQueue: [...playerQueue],
+        scores: { ...scores },
+        blueShells: { ...blueShells }
+      });
 
-  if (scores[loser] === 6) {
-    scores[loser] = 0;
-    log.push(`${formatTime(timer)} - ${scorer} scored on ${loser} and triggered a 💥 BLUE SHELL!`);
-    const targetBoxId = side === 'left' ? 'rightBox' : 'leftBox';
-    launchBlueShellFireworks(targetBoxId);
-  } else {
-    log.push(`${formatTime(timer)} - ${scorer} scored on ${loser}.`);
-  }
+      const scorer = side === 'left' ? leftPlayer : rightPlayer;
+      const loser = side === 'left' ? rightPlayer : leftPlayer;
 
-  const rotatedOut = loser;
-  const newActive = waitingPlayer;
+      const loserWasAtSix = scores[loser] === 6;
 
-  // decide next waiting - only consume queue if it has someone
-  const usedFromQueue = playerQueue.length > 0;
-  waitingPlayer = usedFromQueue ? playerQueue.shift() : rotatedOut;
+      // scorer gets the point
+      scores[scorer]++;
 
-  if (side === 'left') {
-    rightPlayer = newActive;
-  } else {
-    leftPlayer = newActive;
-  }
+      const timeStamp = formatTime(timer);
 
-  // only enqueue the loser if we actually pulled someone from the queue
-  if (usedFromQueue) {
-    playerQueue.push(rotatedOut);
-    // sanitize: ensure no duplicates in queue
-playerQueue = playerQueue.filter((p, i, arr) => arr.indexOf(p) === i && ![leftPlayer, rightPlayer, waitingPlayer].includes(p));
-  }
+      if (loserWasAtSix) {
+        // blue shell trigger
+        scores[loser] = 0;
+        blueShells[scorer] = (blueShells[scorer] || 0) + 1;
+        log.push(`${timeStamp} - ${scorer} scored on ${loser} and triggered a blue shell. ${scorer} collects a shell.`);
+        const targetBoxId = side === 'left' ? 'rightBox' : 'leftBox';
+        launchBlueShellFireworks(targetBoxId);
+      } else {
+        log.push(`${timeStamp} - ${scorer} scored on ${loser}.`);
+      }
 
-  updateUI();
-  checkWinner();
-}
+      const rotatedOut = loser;
+      const newActive = waitingPlayer;
+
+      const usedFromQueue = playerQueue.length > 0;
+      waitingPlayer = usedFromQueue ? playerQueue.shift() : rotatedOut;
+
+      if (side === 'left') {
+        rightPlayer = newActive;
+      } else {
+        leftPlayer = newActive;
+      }
+
+      if (usedFromQueue) {
+        playerQueue.push(rotatedOut);
+        playerQueue = playerQueue.filter((p, i, arr) =>
+          arr.indexOf(p) === i && ![leftPlayer, rightPlayer, waitingPlayer].includes(p)
+        );
+      }
+
+      updateUI();
+      checkWinner();
+    }
 
     function undoLast() {
       const lastState = gameStateHistory.pop();
@@ -417,21 +496,23 @@ playerQueue = playerQueue.filter((p, i, arr) => arr.indexOf(p) === i && ![leftPl
         waitingPlayer = lastState.waitingPlayer;
         playerQueue = [...lastState.playerQueue];
         scores = { ...lastState.scores };
+        blueShells = { ...lastState.blueShells };
         log.pop();
+        gameOver = false;
         updateUI();
       }
     }
 
     function resetGame() {
-  const confirm1 = confirm("Are you sure you want to reset the game?");
-  if (confirm1) {
-    const confirm2 = confirm("This will erase all players and start fresh. Continue?");
-    if (confirm2) {
-      clearInterval(timerInterval);
-      location.reload(); // swap button will show again on reload
+      const confirm1 = confirm("Are you sure you want to reset the game?");
+      if (confirm1) {
+        const confirm2 = confirm("This will erase all players and start fresh. Continue?");
+        if (confirm2) {
+          clearInterval(timerInterval);
+          location.reload();
+        }
+      }
     }
-  }
-}
 
     function startTimeout() {
       if (timeoutInterval) clearInterval(timeoutInterval);
@@ -450,132 +531,203 @@ playerQueue = playerQueue.filter((p, i, arr) => arr.indexOf(p) === i && ![leftPl
 
     function checkWinner() {
       const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
+
+      // Blue shell win condition: first to collect 3
+      const blueShellCandidates = allPlayers.filter(p => (blueShells[p] || 0) >= 3);
+      if (blueShellCandidates.length > 0) {
+        const blueShellWinner = blueShellCandidates[0]; // first in rotation with 3 shells
+
+        clearInterval(timerInterval);
+        gameOver = true;
+
+        const ranking = [...allPlayers].sort((a, b) => scores[b] - scores[a]);
+        const winnerText = `🏆 Winner by blue shells: ${blueShellWinner} (${scores[blueShellWinner]})
+🐚 Blue shells collected: ${blueShells[blueShellWinner]}
+🥈 2nd: ${ranking[1]} (${scores[ranking[1]]})
+🥉 3rd: ${ranking[2]} (${scores[ranking[2]]})`;
+
+        launchWinEffects(blueShellWinner);
+        alert(winnerText);
+        setupShareButton(winnerText);
+        return;
+      }
+
+      // Normal 7 point win condition
       for (const player of allPlayers) {
         if (scores[player] >= 7) {
           clearInterval(timerInterval);
-          const ranking = [...allPlayers].sort((a, b) => scores[b] - scores[a]);
+          gameOver = true;
 
+          const ranking = [...allPlayers].sort((a, b) => scores[b] - scores[a]);
           const winnerText = `🏆 Winner: ${ranking[0]} (${scores[ranking[0]]})
 🥈 2nd: ${ranking[1]} (${scores[ranking[1]]})
 🥉 3rd: ${ranking[2]} (${scores[ranking[2]]})`;
 
+          launchWinEffects(ranking[0]);
           alert(winnerText);
-
-          const shareButton = document.getElementById('shareResultsBtn');
-          shareButton.style.display = 'inline-block';
-
-          shareButton.onclick = () => {
-            const shareData = {
-              title: "King of the Table Results",
-              text: `🎉 Final Results:\n${winnerText}`,
-              url: window.location.href
-            };
-
-            if (navigator.share) {
-              navigator.share(shareData).catch(err => console.warn("Share failed:", err));
-            } else {
-              const tweetText = encodeURIComponent(`${shareData.text}`);
-              window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
-            }
-          };
+          setupShareButton(winnerText);
+          return;
         }
       }
     }
+
+    function setupShareButton(winnerText) {
+      const shareButton = document.getElementById('shareResultsBtn');
+      shareButton.style.display = 'inline-block';
+
+      shareButton.onclick = () => {
+        const shareData = {
+          title: "King of the Table Results",
+          text: `🎉 Final Results:\n${winnerText}`,
+          url: window.location.href
+        };
+
+        if (navigator.share) {
+          navigator.share(shareData).catch(err => console.warn("Share failed:", err));
+        } else {
+          const tweetText = encodeURIComponent(`${shareData.text}`);
+          window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, '_blank');
+        }
+      };
+    }
+
     function addPlayer() {
-  const newName = prompt("Enter new player's name:");
-  if (!newName) return;
+      const newName = prompt("Enter new player's name:");
+      if (!newName) return;
 
-  const name = newName.trim();
-  if (!name) return alert("Invalid name.");
-  if ([leftPlayer, rightPlayer, waitingPlayer, ...playerQueue].includes(name)) {
-    return alert("Player already exists.");
-  }
+      const name = newName.trim();
+      if (!name) return alert("Invalid name.");
+      if ([leftPlayer, rightPlayer, waitingPlayer, ...playerQueue].includes(name)) {
+        return alert("Player already exists.");
+      }
 
-  scores[name] = 0;
-  playerQueue.push(name);
-  log.push(`${formatTime(timer)} – ${name} added to the rotation.`);
-  updateUI();
-}
+      scores[name] = 0;
+      blueShells[name] = 0;
+      playerQueue.push(name);
+      log.push(`${formatTime(timer)} – ${name} added to the rotation.`);
+      updateUI();
+    }
 
-function removePlayer() {
-  const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
-  const nameToRemove = prompt(`Enter the name of the player to remove:\n${allPlayers.join(", ")}`);
-  if (!nameToRemove) return;
+    function removePlayer() {
+      const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
+      const nameToRemove =
+        prompt(`Enter the name of the player to remove:\n${allPlayers.join(", ")}`);
+      if (!nameToRemove) return;
 
-  const name = nameToRemove.trim();
-  if (!allPlayers.includes(name)) return alert("Player not found.");
+      const name = nameToRemove.trim();
+      if (!allPlayers.includes(name)) return alert("Player not found.");
 
-  if (name === leftPlayer || name === rightPlayer || name === waitingPlayer) {
-    alert("Cannot remove an active player. Wait until they rotate out.");
-    return;
-  }
+      if (name === leftPlayer || name === rightPlayer || name === waitingPlayer) {
+        alert("Cannot remove an active player. Wait until they rotate out.");
+        return;
+      }
 
-  playerQueue = playerQueue.filter(p => p !== name);
-  delete scores[name];
-  log.push(`${formatTime(timer)} – ${name} removed from the rotation.`);
-  updateUI();
-}
+      playerQueue = playerQueue.filter(p => p !== name);
+      delete scores[name];
+      delete blueShells[name];
+      log.push(`${formatTime(timer)} – ${name} removed from the rotation.`);
+      updateUI();
+    }
+
     function launchBlueShellFireworks(targetBoxId) {
-  const box = document.getElementById(targetBoxId);
-  for (let i = 0; i < 8; i++) {
-    const shell = document.createElement('div');
-    shell.className = 'firework';
-    shell.style.left = `${Math.random() * (box.offsetWidth - 60)}px`;
-    shell.style.top = `${Math.random() * (box.offsetHeight - 60)}px`;
-    shell.style.setProperty('--x', `${(Math.random() - 0.5) * 300}px`);
-    shell.style.setProperty('--y', `${(Math.random() - 0.5) * 300}px`);
-    box.appendChild(shell);
-    setTimeout(() => shell.remove(), 1000);
-  }
-}
+      const box = document.getElementById(targetBoxId);
+      if (!box) return;
+      for (let i = 0; i < 8; i++) {
+        const shell = document.createElement('div');
+        shell.className = 'firework';
+        shell.style.left = `${Math.random() * (box.offsetWidth - 60)}px`;
+        shell.style.top = `${Math.random() * (box.offsetHeight - 60)}px`;
+        shell.style.setProperty('--x', `${(Math.random() - 0.5) * 300}px`);
+        shell.style.setProperty('--y', `${(Math.random() - 0.5) * 300}px`);
+        box.appendChild(shell);
+        setTimeout(() => shell.remove(), 1000);
+      }
+    }
+
+    function launchGraffitiExplosion(winnerName) {
+      const overlay = document.createElement('div');
+      overlay.className = 'graffiti-overlay';
+
+      const words = [
+        'KING',
+        'KOTT',
+        'BOOM',
+        'GAME',
+        winnerName.toUpperCase()
+      ];
+
+      for (let i = 0; i < 6; i++) {
+        const wordEl = document.createElement('div');
+        wordEl.className = 'graffiti-word';
+        wordEl.textContent = words[i % words.length];
+        wordEl.style.left = `${Math.random() * 70 + 10}%`;
+        wordEl.style.top = `${Math.random() * 60 + 10}%`;
+        overlay.appendChild(wordEl);
+      }
+
+      document.body.appendChild(overlay);
+      setTimeout(() => {
+        overlay.remove();
+      }, 1200);
+    }
+
+    function launchWinEffects(winnerName) {
+      // Blue shell explosions on both pucks
+      launchBlueShellFireworks('leftBox');
+      launchBlueShellFireworks('rightBox');
+      launchBlueShellFireworks('waitingBox');
+
+      // Graffiti overlay
+      launchGraffitiExplosion(winnerName);
+    }
+
     function swapSides() {
-  const confirmSwap = confirm("Are you sure you want to swap sides?");
-  if (!confirmSwap) return;
+      const confirmSwap = confirm("Are you sure you want to swap sides?");
+      if (!confirmSwap) return;
 
-  const temp = leftPlayer;
-  leftPlayer = rightPlayer;
-  rightPlayer = temp;
+      const temp = leftPlayer;
+      leftPlayer = rightPlayer;
+      rightPlayer = temp;
 
-  log.push(`${formatTime(timer)} – 🔄 Sides swapped: ${leftPlayer} is now on the left, ${rightPlayer} on the right.`);
+      log.push(`${formatTime(timer)} – 🔄 Sides swapped: ${leftPlayer} is now on the left, ${rightPlayer} on the right.`);
 
-  updateUI();
-}
+      updateUI();
+    }
+
     function restartSamePlayers() {
-  const confirmRestart = confirm("Are you sure you want to restart the game with the same players?");
-  if (!confirmRestart) return;
+      const confirmRestart = confirm("Are you sure you want to restart the game with the same players?");
+      if (!confirmRestart) return;
 
-  // Reset all state but preserve player names
-  const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
+      const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
 
-  // Reset globals
-  playerQueue = [...allPlayers];
-  scores = {};
-  log = [];
-  gameStateHistory = [];
-  firstScoreOccurred = false;
+      playerQueue = [...allPlayers];
+      scores = {};
+      blueShells = {};
+      log = [];
+      gameStateHistory = [];
+      firstScoreOccurred = false;
+      gameOver = false;
 
-  // Reassign roles
-  leftPlayer = playerQueue.shift();
-  rightPlayer = playerQueue.shift();
-  waitingPlayer = playerQueue.shift();
+      leftPlayer = playerQueue.shift();
+      rightPlayer = playerQueue.shift();
+      waitingPlayer = playerQueue.shift();
 
-  for (const name of [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue]) {
-    scores[name] = 0;
-  }
+      for (const name of [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue]) {
+        scores[name] = 0;
+        blueShells[name] = 0;
+      }
 
-  // Reset timer
-  timer = 0;
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    timer++;
-    document.getElementById('timer').textContent = formatTime(timer);
-  }, 1000);
+      timer = 0;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timer++;
+        document.getElementById('timer').textContent = formatTime(timer);
+      }, 1000);
 
-  // Show swap button again
-  document.getElementById('swapBtn').style.display = 'inline-block';
+      document.getElementById('swapBtn').style.display = 'inline-block';
 
-  updateUI();
-}
+      updateUI();
+    }
   </script>
 </body>
 </html>
