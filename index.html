@@ -265,6 +265,64 @@
         transform: scale(2) rotate(15deg);
       }
     }
+
+    /* Gear section with rules */
+
+    .gear-section {
+      margin-top: 1em;
+      padding: 0 1em;
+    }
+
+    .gear-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.95em;
+      padding: 0.4em 0.8em;
+      border-radius: 999px;
+      border: 1px solid #444;
+      background: #181818;
+      user-select: none;
+    }
+
+    .gear-header:hover {
+      background: #222;
+    }
+
+    .gear-icon {
+      font-size: 1.1em;
+    }
+
+    .gear-panel {
+      margin: 0.7em auto 0;
+      max-width: 750px;
+      text-align: left;
+      font-size: 0.9em;
+      background: #000;
+      border-radius: 10px;
+      border: 1px solid #333;
+      padding: 0.9em 1em;
+      display: none;
+    }
+
+    .gear-panel p {
+      margin: 0.2em 0 0.5em;
+    }
+
+    .gear-panel ol {
+      padding-left: 1.2em;
+      margin: 0.3em 0;
+    }
+
+    .gear-panel li {
+      margin-bottom: 0.3em;
+    }
+
+    .gear-panel strong {
+      color: #ffd54f;
+    }
   </style>
   <script>
     if ('serviceWorker' in navigator) {
@@ -307,6 +365,36 @@
     <button onclick="addPlayer()">Add Player</button>
     <button onclick="removePlayer()">Remove Player</button>
     <button id="shareResultsBtn" style="display:none;">📤 Share Results</button>
+  </div>
+
+  <!-- Gear section with funny rules between buttons and versioning -->
+  <div class="gear-section">
+    <div class="gear-header" onclick="toggleRules()">
+      <span class="gear-icon">⚙️</span>
+      <span>Game tips and KOTT rules</span>
+    </div>
+    <div id="rulesPanel" class="gear-panel">
+      <p><strong>Quick vibe:</strong> King of the Table is pickup air hockey where the table is the throne and the queue is the drama.</p>
+      <ol>
+        <li><strong>Lineup</strong>  
+          3 active players: red side, yellow side, and the green waiting puck. Everyone else chills in the rotation line.</li>
+        <li><strong>Winner stays</strong>  
+          Tap the puck that scored. Scorer stays on. Loser rotates out. Waiting player jumps in. Extra humans go to the back of the line.</li>
+        <li><strong>Scoring to win</strong>  
+          First to 7 points or first to collect 3 blue shells wins the throne for this game.</li>
+        <li><strong>Blue shell chaos</strong>  
+          If you have 6 and get scored on, your score drops to 0 and the shooter earns 1 blue shell. Little shell icons show up next to their name.</li>
+        <li><strong>Buttons in plain English</strong>  
+          Swap Sides: trade ends before the first point. After someone scores, you are locked in, no backsies.  
+          Restart Game: same players, scores and shells back to 0, timer reset.  
+          Reset Game: nuke it all and start fresh with new names.  
+          Undo Last: fix a fat finger if someone tapped the wrong puck.  
+          Time Out: 10 second breather. If you still get scored on, that is between you and the air hockey gods.  
+          Add / Remove Player: manage the chaos in the queue.</li>
+        <li><strong>House spirit rule</strong>  
+          If you find a real bug, tell Pete. You earn a bug bounty crown and at least one imaginary blue shell in your heart.</li>
+      </ol>
+    </div>
   </div>
 
   <p id="versionTag">Version beta 1.4.1 (KOTT blue shell x3)</p>
@@ -727,6 +815,13 @@
       document.getElementById('swapBtn').style.display = 'inline-block';
 
       updateUI();
+    }
+
+    function toggleRules() {
+      const panel = document.getElementById('rulesPanel');
+      if (!panel) return;
+      const isHidden = panel.style.display === 'none' || panel.style.display === '';
+      panel.style.display = isHidden ? 'block' : 'none';
     }
   </script>
 </body>
