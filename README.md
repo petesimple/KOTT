@@ -1,84 +1,129 @@
-# 👑 King of the Table (KOTT)
+👑 King of the Table (KOTT)
 
-**King of the Table** is a web-based rotating scoreboard system built for fast-paced 3-player air hockey matches. Two players are always in play, one is on deck, and the rest wait their turn in a live rotation. The goal? Be the King of the Table... unless you get hit with the dreaded **Blue Shell**.
+King of the Table is a web-based rotating scoreboard system built for fast-paced multi-player air hockey chaos.
+Two players battle, one player waits on deck, and everyone else chills in the queue.
+Survive long enough and you’re King… until a Blue Shell ruins your life.
 
----
+⸻
 
-## 🎮 How It Works
+🎮 How It Works
+	•	Enter 3 to 20 players
+	•	The first three are assigned:
+	•	🔴 Left Player (Active)
+	•	🔵 Right Player (Active)
+	•	🟡 On Deck Player
+	•	All others go into the rotation queue
 
-- Enter at least **3 player names** to start the game
-- The first three are assigned:
-  - 🔴 Left Player (Active)
-  - 🟡 Right Player (Active)
-  - 🟢 Waiting Player (On Deck)
-- The rest are added to the **rotation queue**
+Every point changes the battlefield.
 
-### Scoring
-- Click a player's circle to award a point
-- If a player gets scored on while they have **6 points**, they get **Blue Shelled** (score reset to 0!)
-- The **scorer** stays in
-- The **loser** rotates out
-- The **waiting player** rotates in
-- The **loser** goes to the back of the queue
+⸻
 
----
+🏒 Scoring Logic
 
-## 🧠 Features
+When a goal is scored:
+	•	✅ The scorer stays
+	•	🔄 The loser rotates out
+	•	⬆️ The On Deck player rotates in
+	•	⬇️ The loser goes to the end of the queue
 
-- ⏱ Live game timer
-- 🔁 Smart player rotation
-- 💥 Blue Shell mechanic at 6 points
-- 📋 Match log with all scoring events
-- ✅ Undo last action
-- 🕹 Add or remove players mid-game
-- 📜 Live queue display
-- 📤 Share final results with friends
+Tap a player’s score circle to award a goal.
 
----
+⸻
 
-## 📦 Getting Started
+🐢 The Blue Shell Rule
 
-To run KOTT locally:
+If a player gets scored on while they have exactly 6 points:
 
-1. Clone this repo or copy all files into a local folder
-2. Open `index.html` in any modern browser
-3. Profit
+💥 BLUE SHELL
+	•	Their score resets to 0
+	•	They receive a Blue Shell token
+	•	A small blue shell icon appears next to their name
 
-To host it online:
+Blue Shells are permanent trophies of shame.
 
-- Upload the files to GitHub Pages, Netlify, or any static hosting provider
+⸻
 
----
+🏆 Win Conditions
 
-## 🖼 Logo
+A player becomes King of the Table by:
 
-The KOTT logo features a golden crown atop a red table on a black background — a minimalist arcade throne for our air hockey kings.
+✅ Reaching 7 points
+OR
+✅ Collecting 3 Blue Shells
 
----
+When someone wins:
+	•	The game stops
+	•	💥 Graffiti-style victory explosion
+	•	💥 Blue Shell explosion effects
+	•	Final rankings are displayed
 
-## 💡 Built With
+⸻
 
-- HTML + CSS (responsive and mobile-friendly)
-- JavaScript (vanilla, no frameworks)
-- Service Worker + PWA support
+🧠 Features
+	•	⏱ Live match timer
+	•	🔁 Smart auto-rotation system
+	•	🐢 Blue Shell tracking + icons next to names
+	•	💥 Victory & Blue Shell animations
+	•	📋 Full match action log
+	•	🔙 Undo last action
+	•	➕ Add/remove players mid-game
+	•	📜 Live queue panel
+	•	📤 Shareable final results
 
----
+⸻
 
-## 🚧 Roadmap Ideas
+📦 Getting Started
 
-- 🔊 Add sound effects for scoring and blue shell
-- 🏆 Leaderboard persistence
-- 🎨 Theme selector (Classic, Retro, Neon)
-- 📱 QR Code share
-- ✏️ Edit player names
+Run locally
+	1.	Clone this repo or download the files
+	2.	Open index.html in any modern browser
+	3.	Enter players. Start chaos.
 
----
+Host online
 
-## 👑 Credits
+Upload to:
+	•	GitHub Pages
+	•	Netlify
+	•	Any basic static hosting
 
-Created by [Pete Lippincott](https://github.com/petesimple) and ChatGPT.  
-Inspired by 3CS and the thrill of air hockey rotation chaos.
+⸻
 
----
+🎨 Logo
 
-**Long live the King... unless he has 6.**
+The KOTT logo shows a golden crown floating over a red air hockey table on a black background.
+A throne for kings.
+A warning for everyone else.
+
+⸻
+
+💡 Built With
+	•	HTML + CSS (mobile friendly)
+	•	Vanilla JavaScript
+	•	Service Worker + PWA support
+
+No libraries. No nonsense.
+
+⸻
+
+🚧 Roadmap
+	•	🔊 Scoring + Blue Shell sound effects
+	•	🏆 Persistent leaderboard
+	•	🎨 Theme selector (Classic, Retro, Neon)
+	•	📱 QR code sharing
+	•	✏ Editable player names
+	•	🌐 Live remote display mode
+
+⸻
+
+👑 Credits
+
+Created by Pete Lippincott￼ and ChatGPT
+Inspired by:
+	•	The 3CS system
+	•	Real-life rotation tables
+	•	Mario Kart trauma
+
+⸻
+
+Long live the King.
+Unless he’s sitting on 6. 🐢👑
