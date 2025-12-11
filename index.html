@@ -19,16 +19,19 @@
 
     header {
       background: #222;
-      padding: 1em;
+      padding: 0.5em;
     }
 
-    header img {
-      max-width: 200px;
+    header h1 {
+      margin: 0;
+      font-size: 1.2em;
+      font-weight: 600;
     }
 
     .players {
       display: flex;
       justify-content: space-around;
+      align-items: center;
       margin-top: 1em;
     }
 
@@ -141,7 +144,7 @@
     .waiting-puck {
       width: 250px;
       height: 250px;
-      margin: 1em auto;
+      margin: 1em auto 0.5em auto;
       border-radius: 50%;
       background: #39ff14;
       display: flex;
@@ -181,6 +184,27 @@
       z-index: 1;
     }
 
+    /* Center logo between the two top pucks */
+    .logo-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 200px;
+    }
+
+    .logo-center img {
+      max-width: 180px;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Timer row under the green waiting puck */
+    .timer-row {
+      margin-top: 0.5em;
+      font-size: 1.4em;
+      font-weight: 600;
+    }
+
     @media (max-width: 600px) {
       .player-box,
       .waiting-puck {
@@ -196,6 +220,14 @@
 
       .player-label {
         font-size: 1.2em;
+      }
+
+      .logo-center {
+        width: 140px;
+      }
+
+      .logo-center img {
+        max-width: 120px;
       }
     }
 
@@ -333,14 +365,19 @@
 </head>
 <body>
   <header>
-    <img src="Kottlogo.png" alt="King of the Table Logo">
-    <div>⏱️ <span id="timer">00:00</span></div>
+    <!-- Optional: title, or leave blank for a clean bar -->
+    <!-- <h1>King of the Table</h1> -->
   </header>
 
   <div class="players">
     <div class="player-box" id="leftBox" onclick="score('left')">
       <div class="puck-inner"></div>
       <div class="player-label" id="leftLabel"></div>
+    </div>
+
+    <!-- Logo floated between the two top pucks -->
+    <div class="logo-center">
+      <img src="Kottlogo.png" alt="King of the Table Logo">
     </div>
 
     <div class="player-box" id="rightBox" onclick="score('right')">
@@ -353,7 +390,12 @@
     <div class="puck-inner tape"></div>
     <div class="player-label" id="waitingLabel"></div>
   </div>
-  
+
+  <!-- Timer and timer logo below the bottom green puck -->
+  <div class="timer-row">
+    ⏱️ <span id="timer">00:00</span>
+  </div>
+
   <div id="playerQueueDisplay" style="margin-top: 20px; font-size: 1em;"></div>
 
   <div class="controls">
@@ -371,7 +413,7 @@
   <div class="gear-section">
     <div class="gear-header" onclick="toggleRules()">
       <span class="gear-icon">⚙️</span>
-      <!--<span>Game tips and KOTT rules</span>-->
+      <!-- <span>Game tips and KOTT rules</span> -->
     </div>
     <div id="rulesPanel" class="gear-panel">
       <p><strong>Quick vibe:</strong> King of the Table is pickup air hockey where the table is the throne and the queue is the drama.</p>
