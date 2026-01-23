@@ -824,40 +824,68 @@
       updateUI();
     }
 
+function shuffleArray(arr) {
+  // Fisher-Yates
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+    
     function restartSamePlayers() {
-      const confirmRestart = confirm("Are you sure you want to restart the game with the same players?");
-      if (!confirmRestart) return;
+  const confirmRestart = confirm("Restart game with the same players?\n\nThis resets scores, shells, log, and timer.");
+  if (!confirmRestart) return;
 
-      const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
+  // Second step in the popup flow:
+  // OK = randomize names/order
+  // Cancel = keep current order
+  const randomize = confirm(
+    "Randomize player order too?\n\nOK = Randomize\nCancel = Keep current order"
+  );
 
-      playerQueue = [...allPlayers];
-      scores = {};
-      blueShells = {};
-      log = [];
-      gameStateHistory = [];
-      firstScoreOccurred = false;
-      gameOver = false;
+  // Snapshot current rotation order exactly as shown
+  const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
 
-      leftPlayer = playerQueue.shift();
-      rightPlayer = playerQueue.shift();
-      waitingPlayer = playerQueue.shift();
+  // Build the new queue
+  playerQueue = [...allPlayers];
+  if (randomize) shuffleArray(playerQueue);
 
-      for (const name of [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue]) {
-        scores[name] = 0;
-        blueShells[name] = 0;
-      }
+  // Hard reset match state (but keep the same name list)
+  scores = {};
+  blueShells = {};
+  log = [];
+  gameStateHistory = [];
+  firstScoreOccurred = false;
+  gameOver = false;
 
-      timer = 0;
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timer++;
-        document.getElementById('timer').textContent = formatTime(timer);
-      }, 1000);
+  // Re deal top 3
+  leftPlayer = playerQueue.shift();
+  rightPlayer = playerQueue.shift();
+  waitingPlayer = playerQueue.shift();
 
-      document.getElementById('swapBtn').style.display = 'inline-block';
+  // Initialize per player state
+  for (const name of [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue]) {
+    scores[name] = 0;
+    blueShells[name] = 0;
+  }
 
-      updateUI();
-    }
+  // Reset timer
+  timer = 0;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timer++;
+    document.getElementById('timer').textContent = formatTime(timer);
+  }, 1000);
+
+  // Swap button comes back until first score happens
+  document.getElementById('swapBtn').style.display = 'inline-block';
+
+  // Optional: leave a breadcrumb in the log
+  log.push(`${formatTime(timer)} – Restarted game (${randomize ? "randomized order" : "same order"}).`);
+
+  updateUI();
+}
 
     function toggleRules() {
       const panel = document.getElementById('rulesPanel');
