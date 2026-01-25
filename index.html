@@ -63,25 +63,37 @@
     }
 
     .player-label {
-      position: relative;
-      z-index: 2;
-      color: black;
-      font-weight: 900;
-      font-size: 1.5em;
-      text-align: center;
-      padding: 0 10px;
-      background: transparent;
-      width: 90%;
-      white-space: normal;
-      word-break: break-word;
-      line-height: 1.2;
-      min-height: 2.5em;
-      pointer-events: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
+  position: relative;
+  z-index: 2;
+  color: black;
+  font-weight: 900;
+
+  /* bigger + responsive */
+  font-size: clamp(1.6em, 3.2vw, 2.35em);
+
+  text-align: center;
+  padding: 0 12px;
+  background: transparent;
+  width: 92%;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.15;
+  min-height: 2.4em;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.waiting-puck .player-label {
+  color: black;
+  z-index: 2;
+
+  /* also bigger, but slightly smaller than active pucks */
+  font-size: clamp(1.25em, 2.7vw, 1.9em);
+
+  position: relative;
+}
 
     .shell-icon {
       display: inline-block;
@@ -155,13 +167,6 @@
       overflow: hidden;
     }
 
-    .waiting-puck .player-label {
-      color: black;
-      z-index: 2;
-      font-size: 1.1em;
-      position: relative;
-    }
-
     .waiting-puck .puck-inner.tape {
       width: 220px;
       height: 220px;
@@ -218,9 +223,7 @@
         height: 130px;
       }
 
-      .player-label {
-        font-size: 1.2em;
-      }
+      .player-label { font-size: clamp(1.2em, 4.2vw, 1.7em); }
 
       .logo-center {
         width: 140px;
@@ -298,6 +301,44 @@
       }
     }
 
+    /* Mini puck confetti */
+.puck-confetti {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #111;
+  border: 2px solid rgba(255,255,255,.35);
+  box-shadow: 0 6px 14px rgba(0,0,0,.35);
+  pointer-events: none;
+  z-index: 1500;
+  transform: translate(-50%, -50%);
+  animation: puck-burst 650ms ease-out forwards;
+}
+
+.puck-confetti::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: #f4f4f4;
+  opacity: .95;
+}
+
+@keyframes puck-burst {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform:
+      translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+      scale(0.6)
+      rotate(var(--rot));
+  }
+}
+    
     /* Gear section with rules */
 
     .gear-section {
@@ -559,6 +600,8 @@
 
     function score(side) {
       if (gameOver) return;
+        // mini puck confetti on scoring tap
+  launchPuckConfettiBurst(side === 'left' ? 'leftBox' : 'rightBox');
 
       if (!firstScoreOccurred) {
         firstScoreOccurred = true;
@@ -811,6 +854,45 @@
       launchGraffitiExplosion(winnerName);
     }
 
+function launchPuckConfettiBurst(targetBoxId) {
+  const box = document.getElementById(targetBoxId);
+  if (!box) return;
+
+  const rect = box.getBoundingClientRect();
+  const cx = rect.width / 2;
+  const cy = rect.height / 2;
+
+  const count = 18;
+
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'puck-confetti';
+
+    // start near center with a little randomness
+    const startX = cx + (Math.random() - 0.5) * 24;
+    const startY = cy + (Math.random() - 0.5) * 24;
+
+    // burst outward and slightly downward
+    const dx = (Math.random() - 0.5) * 220;
+    const dy = (Math.random() * 180) + 40;
+
+    p.style.left = `${startX}px`;
+    p.style.top = `${startY}px`;
+    p.style.setProperty('--dx', `${dx}px`);
+    p.style.setProperty('--dy', `${dy}px`);
+    p.style.setProperty('--rot', `${(Math.random() * 720 - 360)}deg`);
+
+    // vary size a bit
+    const s = 10 + Math.random() * 10;
+    p.style.width = `${s}px`;
+    p.style.height = `${s}px`;
+    p.style.animationDuration = `${520 + Math.random() * 220}ms`;
+
+    box.appendChild(p);
+    setTimeout(() => p.remove(), 900);
+  }
+}
+    
     function swapSides() {
       const confirmSwap = confirm("Are you sure you want to swap sides?");
       if (!confirmSwap) return;
