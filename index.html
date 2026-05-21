@@ -7,19 +7,48 @@
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#111111" />
   <link rel="icon" href="Kottlogo.png" type="image/png">
+
   <style>
+    :root {
+      --app-bg: #111111;
+      --header-bg: #222222;
+      --panel-bg: #000000;
+      --button-bg: #444444;
+      --button-hover-bg: #666666;
+      --text-main: #ffffff;
+      --text-muted: #888888;
+
+      --left-color: #ff0000;
+      --right-color: #ffff00;
+      --waiting-color: #39ff14;
+      --accent-color: #ffd54f;
+      --brand-red: #ed1c24;
+
+      --puck-logo-size: 74px;
+      --main-logo-max-width: 190px;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
       font-family: sans-serif;
-      background: #111;
-      color: #fff;
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,0.04), transparent 34%),
+        var(--app-bg);
+      color: var(--text-main);
       margin: 0;
       padding: 0;
       text-align: center;
+      min-height: 100vh;
     }
 
     header {
-      background: #222;
+      background: var(--header-bg);
       padding: 0.5em;
+      min-height: 28px;
     }
 
     header h1 {
@@ -33,6 +62,8 @@
       justify-content: space-around;
       align-items: center;
       margin-top: 1em;
+      gap: 18px;
+      padding: 0 18px;
     }
 
     .player-box {
@@ -41,16 +72,22 @@
       height: 250px;
       margin: 0 10px;
       border-radius: 50%;
-      background: red;
+      background: var(--left-color);
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      box-shadow: 0 0 26px rgba(255,255,255,0.08);
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+
+    .player-box:active {
+      transform: scale(0.97);
     }
 
     #rightBox {
-      background: yellow;
+      background: var(--right-color);
     }
 
     .puck-inner {
@@ -60,40 +97,48 @@
       background: white;
       border-radius: 50%;
       z-index: 1;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.08);
+    }
+
+    .puck-logo {
+      position: absolute;
+      z-index: 2;
+      width: var(--puck-logo-size);
+      height: var(--puck-logo-size);
+      object-fit: contain;
+      opacity: 0.95;
+      pointer-events: none;
+      transform: translateY(48px);
+      display: none;
     }
 
     .player-label {
-  position: relative;
-  z-index: 2;
-  color: black;
-  font-weight: 900;
+      position: relative;
+      z-index: 3;
+      color: black;
+      font-weight: 900;
+      font-size: clamp(1.6em, 3.2vw, 2.35em);
+      text-align: center;
+      padding: 0 12px;
+      background: transparent;
+      width: 92%;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.15;
+      min-height: 2.4em;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: translateY(-8px);
+    }
 
-  /* bigger + responsive */
-  font-size: clamp(1.6em, 3.2vw, 2.35em);
-
-  text-align: center;
-  padding: 0 12px;
-  background: transparent;
-  width: 92%;
-  white-space: normal;
-  word-break: break-word;
-  line-height: 1.15;
-  min-height: 2.4em;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.waiting-puck .player-label {
-  color: black;
-  z-index: 2;
-
-  /* also bigger, but slightly smaller than active pucks */
-  font-size: clamp(1.25em, 2.7vw, 1.9em);
-
-  position: relative;
-}
+    .waiting-puck .player-label {
+      color: black;
+      z-index: 3;
+      font-size: clamp(1.25em, 2.7vw, 1.9em);
+      position: relative;
+    }
 
     .shell-icon {
       display: inline-block;
@@ -102,6 +147,7 @@
       background: url('blue-shell.png') no-repeat center center;
       background-size: contain;
       margin-left: 4px;
+      vertical-align: middle;
     }
 
     .controls {
@@ -110,14 +156,15 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
+      padding: 0 14px;
     }
 
     .log {
-      background: #000;
+      background: var(--panel-bg);
       margin-top: 1em;
       padding: 1em;
       max-height: 200px;
-      overflow-y: scroll;
+      overflow-y: auto;
       text-align: left;
       font-size: 0.9em;
       border-top: 2px solid #444;
@@ -126,7 +173,7 @@
     .timeout {
       font-size: 2em;
       font-weight: bold;
-      color: red;
+      color: var(--brand-red);
       margin-top: 1em;
     }
 
@@ -134,22 +181,22 @@
       width: 140px;
       padding: 0.5em 1em;
       font-size: 1em;
-      background-color: #444;
-      color: #fff;
+      background-color: var(--button-bg);
+      color: var(--text-main);
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
 
     button:hover {
-      background-color: #666;
+      background-color: var(--button-hover-bg);
     }
 
     #versionTag {
       margin-top: 12px;
       text-align: center;
       font-size: 0.9em;
-      color: #888;
+      color: var(--text-muted);
       font-style: italic;
     }
 
@@ -158,13 +205,14 @@
       height: 250px;
       margin: 1em auto 0.5em auto;
       border-radius: 50%;
-      background: #39ff14;
+      background: var(--waiting-color);
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       cursor: default;
       overflow: hidden;
+      box-shadow: 0 0 26px rgba(255,255,255,0.08);
     }
 
     .waiting-puck .puck-inner.tape {
@@ -174,6 +222,12 @@
       border-radius: 50%;
       position: absolute;
       z-index: 1;
+    }
+
+    .waiting-puck .puck-logo {
+      width: calc(var(--puck-logo-size) * 0.9);
+      height: calc(var(--puck-logo-size) * 0.9);
+      transform: translateY(45px);
     }
 
     .waiting-puck::after {
@@ -189,28 +243,58 @@
       z-index: 1;
     }
 
-    /* Center logo between the two top pucks */
     .logo-center {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      width: 200px;
+      width: 220px;
+      min-width: 150px;
+      gap: 8px;
     }
 
     .logo-center img {
-      max-width: 180px;
+      max-width: var(--main-logo-max-width);
       width: 100%;
       height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.45));
     }
 
-    /* Timer row under the green waiting puck */
+    .brand-badge {
+      display: none;
+      padding: 0.28em 0.7em;
+      border-radius: 999px;
+      background: var(--brand-red);
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      transform: rotate(-2deg);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+    }
+
+    body.skott-mode .brand-badge {
+      display: inline-block;
+    }
+
     .timer-row {
       margin-top: 0.5em;
       font-size: 1.4em;
       font-weight: 600;
     }
 
-    @media (max-width: 600px) {
+    #playerQueueDisplay {
+      margin-top: 20px;
+      font-size: 1em;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 700px) {
+      .players {
+        gap: 8px;
+        padding: 0 8px;
+      }
+
       .player-box,
       .waiting-puck {
         width: 160px;
@@ -223,14 +307,62 @@
         height: 130px;
       }
 
-      .player-label { font-size: clamp(1.2em, 4.2vw, 1.7em); }
+      .player-label {
+        font-size: clamp(1.05em, 4.2vw, 1.55em);
+        padding: 0 8px;
+        transform: translateY(-5px);
+      }
+
+      .waiting-puck .player-label {
+        font-size: clamp(1em, 4vw, 1.3em);
+      }
+
+      .puck-logo {
+        transform: translateY(32px);
+      }
+
+      .waiting-puck .puck-logo {
+        transform: translateY(30px);
+      }
 
       .logo-center {
-        width: 140px;
+        width: 130px;
+        min-width: 110px;
       }
 
       .logo-center img {
         max-width: 120px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .players {
+        align-items: flex-start;
+      }
+
+      .player-box,
+      .waiting-puck {
+        width: 135px;
+        height: 135px;
+      }
+
+      .puck-inner,
+      .waiting-puck .puck-inner.tape {
+        width: 108px;
+        height: 108px;
+      }
+
+      .logo-center {
+        width: 90px;
+        min-width: 80px;
+      }
+
+      .brand-badge {
+        font-size: 0.75em;
+      }
+
+      button {
+        width: 128px;
       }
     }
 
@@ -260,8 +392,6 @@
         transform: scale(3) translate(var(--x, 0px), var(--y, 0px));
       }
     }
-
-    /* Graffiti win overlay */
 
     .graffiti-overlay {
       position: fixed;
@@ -301,45 +431,42 @@
       }
     }
 
-    /* Mini puck confetti */
-.puck-confetti {
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: #111;
-  border: 2px solid rgba(255,255,255,.35);
-  box-shadow: 0 6px 14px rgba(0,0,0,.35);
-  pointer-events: none;
-  z-index: 1500;
-  transform: translate(-50%, -50%);
-  animation: puck-burst 650ms ease-out forwards;
-}
+    .puck-confetti {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #111;
+      border: 2px solid rgba(255,255,255,.35);
+      box-shadow: 0 6px 14px rgba(0,0,0,.35);
+      pointer-events: none;
+      z-index: 1500;
+      transform: translate(-50%, -50%);
+      animation: puck-burst 650ms ease-out forwards;
+    }
 
-.puck-confetti::after {
-  content: "";
-  position: absolute;
-  inset: 3px;
-  border-radius: 50%;
-  background: #f4f4f4;
-  opacity: .95;
-}
+    .puck-confetti::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      background: #f4f4f4;
+      opacity: .95;
+    }
 
-@keyframes puck-burst {
-  0% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
-  }
-  100% {
-    opacity: 0;
-    transform:
-      translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
-      scale(0.6)
-      rotate(var(--rot));
-  }
-}
-    
-    /* Gear section with rules */
+    @keyframes puck-burst {
+      0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.8) rotate(0deg);
+      }
+      100% {
+        opacity: 0;
+        transform:
+          translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+          scale(0.6)
+          rotate(var(--rot));
+      }
+    }
 
     .gear-section {
       margin-top: 1em;
@@ -370,10 +497,10 @@
 
     .gear-panel {
       margin: 0.7em auto 0;
-      max-width: 750px;
+      max-width: 860px;
       text-align: left;
       font-size: 0.9em;
-      background: #000;
+      background: var(--panel-bg);
       border-radius: 10px;
       border: 1px solid #333;
       padding: 0.9em 1em;
@@ -390,54 +517,141 @@
     }
 
     .gear-panel li {
-      margin-bottom: 0.3em;
+      margin-bottom: 0.55em;
     }
 
     .gear-panel strong {
-      color: #ffd54f;
+      color: var(--accent-color);
+    }
+
+    .settings-tabs {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .settings-tabs button {
+      width: auto;
+      min-width: 110px;
+      padding: 0.45em 0.8em;
+    }
+
+    .gear-tab {
+      animation: gearFade 160ms ease-out;
+    }
+
+    @keyframes gearFade {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .custom-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .custom-grid label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: #ddd;
+      font-weight: 700;
+    }
+
+    .custom-grid input[type="file"],
+    .custom-grid input[type="color"],
+    .custom-grid input[type="range"],
+    .custom-grid input[type="text"] {
+      width: 100%;
+    }
+
+    .custom-grid input[type="text"] {
+      padding: 0.55em;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background: #111;
+      color: #fff;
+    }
+
+    .custom-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      justify-content: center;
+    }
+
+    .custom-actions button {
+      width: auto;
+      min-width: 140px;
+    }
+
+    .tiny-help {
+      color: #aaa;
+      margin-top: 10px;
+      font-size: 0.92em;
+    }
+
+    @media (max-width: 600px) {
+      .custom-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
-        .then(() => console.log('Service Worker Registered'));
+        .then(() => console.log('Service Worker Registered'))
+        .catch(err => console.warn('Service Worker registration failed:', err));
     }
   </script>
 </head>
 <body>
   <header>
-    <!-- Optional: title, or leave blank for a clean bar -->
-    <!-- <h1>King of the Table</h1> -->
+    <!-- Optional title area intentionally left clean -->
   </header>
 
   <div class="players">
     <div class="player-box" id="leftBox" onclick="score('left')">
       <div class="puck-inner"></div>
+      <img class="puck-logo" id="leftPuckLogo" alt="">
       <div class="player-label" id="leftLabel"></div>
     </div>
 
-    <!-- Logo floated between the two top pucks -->
     <div class="logo-center">
-      <img src="Kottlogo.png" alt="King of the Table Logo">
+      <img id="mainLogo" src="Kottlogo.png" alt="King of the Table Logo">
+      <div class="brand-badge" id="brandBadge">SKOTT</div>
     </div>
 
     <div class="player-box" id="rightBox" onclick="score('right')">
       <div class="puck-inner"></div>
+      <img class="puck-logo" id="rightPuckLogo" alt="">
       <div class="player-label" id="rightLabel"></div>
     </div>
   </div>
 
   <div class="waiting-puck" id="waitingBox">
     <div class="puck-inner tape"></div>
+    <img class="puck-logo" id="waitingPuckLogo" alt="">
     <div class="player-label" id="waitingLabel"></div>
   </div>
 
-  <!-- Timer and timer logo below the bottom green puck -->
   <div class="timer-row">
     ⏱️ <span id="timer">00:00</span>
   </div>
 
-  <div id="playerQueueDisplay" style="margin-top: 20px; font-size: 1em;"></div>
+  <div id="playerQueueDisplay"></div>
 
   <div class="controls">
     <button id="swapBtn" onclick="swapSides()">Swap Sides</button>
@@ -450,44 +664,120 @@
     <button id="shareResultsBtn" style="display:none;">📤 Share Results</button>
   </div>
 
-  <!-- Gear section with funny rules between buttons and versioning -->
   <div class="gear-section">
-    <div class="gear-header" onclick="toggleRules()">
+    <div class="gear-header" onclick="toggleRules()" title="Settings">
       <span class="gear-icon">⚙️</span>
-      <!-- <span>Game tips and KOTT rules</span> -->
     </div>
+
     <div id="rulesPanel" class="gear-panel">
-      <p><strong>Quick vibe:</strong> King of the Table is pickup air hockey where the table is the throne and the queue is the drama.</p>
-      <ol>
-        <li><strong>Lineup</strong>  
-          3 active players: red side, yellow side, and the green waiting puck. Everyone else chills in the rotation line.</li>
-        <li><strong>Winner stays</strong>  
-          Tap the puck that scored. Scorer stays on. Loser rotates out. Waiting player jumps in. Extra humans go to the back of the line.</li>
-        <li><strong>Scoring to win</strong>  
-          First to 7 points or first to collect 3 blue shells wins the throne for this game.</li>
-        <li><strong>Blue shell chaos</strong>  
-          If you have 6 and get scored on, your score drops to 0 and the shooter earns 1 blue shell. Little shell icons show up next to their name.</li>
-        <li><strong>Buttons in plain English</strong>  
-          Swap Sides: trade ends before the first point. After someone scores, you are locked in, no backsies.  
-          Restart Game: same players, scores and shells back to 0, timer reset.  
-          Reset Game: nuke it all and start fresh with new names.  
-          Undo Last: fix a fat finger if someone tapped the wrong puck.  
-          Time Out: 10 second breather. If you still get scored on, that is between you and the air hockey gods.  
-          Add / Remove Player: manage the chaos in the queue.</li>
-        <li><strong>House spirit rule</strong>  
-          If you find a real bug, tell Pete. You earn a bug bounty crown and at least one imaginary blue shell in your heart.</li>
-      </ol>
+      <div class="settings-tabs">
+        <button type="button" onclick="showGearTab('rulesTab')">Rules</button>
+        <button type="button" onclick="showGearTab('customizeTab')">Customize</button>
+      </div>
+
+      <div id="rulesTab" class="gear-tab">
+        <p><strong>Quick vibe:</strong> King of the Table is pickup air hockey where the table is the throne and the queue is the drama.</p>
+        <ol>
+          <li><strong>Lineup</strong><br>
+            3 active players: red side, yellow side, and the green waiting puck. Everyone else chills in the rotation line.</li>
+
+          <li><strong>Winner stays</strong><br>
+            Tap the puck that scored. Scorer stays on. Loser rotates out. Waiting player jumps in. Extra humans go to the back of the line.</li>
+
+          <li><strong>Scoring to win</strong><br>
+            First to 7 points or first to collect 3 blue shells wins the throne for this game.</li>
+
+          <li><strong>Blue shell chaos</strong><br>
+            If you have 6 and get scored on, your score drops to 0 and the shooter earns 1 blue shell. Little shell icons show up next to their name.</li>
+
+          <li><strong>Buttons in plain English</strong><br>
+            Swap Sides: trade ends before the first point. After someone scores, you are locked in, no backsies.<br>
+            Restart Game: same players, scores and shells back to 0, timer reset.<br>
+            Reset Game: nuke it all and start fresh with new names.<br>
+            Undo Last: fix a fat finger if someone tapped the wrong puck.<br>
+            Time Out: 10 second breather.<br>
+            Add / Remove Player: manage the chaos in the queue.</li>
+
+          <li><strong>House spirit rule</strong><br>
+            If you find a real bug, tell Pete. You earn a bug bounty crown and at least one imaginary blue shell in your heart.</li>
+        </ol>
+      </div>
+
+      <div id="customizeTab" class="gear-tab" style="display:none;">
+        <p><strong>Branding mode:</strong> Swap the center logo, add sponsor logos to the pucks, and change the game colors.</p>
+
+        <div class="custom-grid">
+          <label>
+            Main logo
+            <input type="file" accept="image/*" onchange="handleLogoUpload(event, 'mainLogoData')">
+          </label>
+
+          <label>
+            Puck logo
+            <input type="file" accept="image/*" onchange="handleLogoUpload(event, 'puckLogoData')">
+          </label>
+
+          <label>
+            Badge text
+            <input type="text" id="badgeTextInput" value="SKOTT" maxlength="18" oninput="setBadgeText(this.value)">
+          </label>
+
+          <label>
+            Left puck color
+            <input type="color" id="leftColorPicker" value="#ff0000" onchange="setThemeColor('--left-color', this.value, 'leftColor')">
+          </label>
+
+          <label>
+            Right puck color
+            <input type="color" id="rightColorPicker" value="#ffff00" onchange="setThemeColor('--right-color', this.value, 'rightColor')">
+          </label>
+
+          <label>
+            Waiting puck color
+            <input type="color" id="waitingColorPicker" value="#39ff14" onchange="setThemeColor('--waiting-color', this.value, 'waitingColor')">
+          </label>
+
+          <label>
+            Accent color
+            <input type="color" id="accentColorPicker" value="#ffd54f" onchange="setThemeColor('--accent-color', this.value, 'accentColor')">
+          </label>
+
+          <label>
+            Background color
+            <input type="color" id="bgColorPicker" value="#111111" onchange="setThemeColor('--app-bg', this.value, 'appBg')">
+          </label>
+
+          <label>
+            Button color
+            <input type="color" id="buttonColorPicker" value="#444444" onchange="setThemeColor('--button-bg', this.value, 'buttonBg')">
+          </label>
+
+          <label>
+            Puck logo size
+            <input type="range" id="puckLogoSizeRange" min="40" max="120" value="74" oninput="setPuckLogoSize(this.value)">
+          </label>
+        </div>
+
+        <div class="custom-actions">
+          <button type="button" onclick="applySmoothieKingTheme()">SKOTT Theme</button>
+          <button type="button" onclick="applyDefaultKottTheme()">Default KOTT</button>
+          <button type="button" onclick="clearCustomBranding()">Clear Logos</button>
+          <button type="button" onclick="clearAllBranding()">Full Reset</button>
+        </div>
+
+        <p class="tiny-help">Logos and colors save on this device automatically. For best results, use transparent PNG logos.</p>
+      </div>
     </div>
   </div>
 
-  <p id="versionTag">Version beta 1.5 (random spicy 🌶️)</p>
+  <p id="versionTag">Version beta 1.6 (custom skins 👑)</p>
   <div class="timeout" id="timeoutDisplay"></div>
   <div class="log" id="log"></div>
 
   <script>
     let playerQueue = [];
     let scores = {};
-    let blueShells = {}; // per player blue shell collection
+    let blueShells = {};
     let log = [];
     let gameStateHistory = [];
     let timer = 0, timerInterval;
@@ -500,7 +790,204 @@
     let firstScoreOccurred = false;
     let gameOver = false;
 
-    window.onload = initGameOnce;
+    const BRAND_KEYS = {
+      mainLogoData: "KOTT_MAIN_LOGO_DATA",
+      puckLogoData: "KOTT_PUCK_LOGO_DATA",
+      leftColor: "KOTT_LEFT_COLOR",
+      rightColor: "KOTT_RIGHT_COLOR",
+      waitingColor: "KOTT_WAITING_COLOR",
+      accentColor: "KOTT_ACCENT_COLOR",
+      appBg: "KOTT_APP_BG",
+      buttonBg: "KOTT_BUTTON_BG",
+      puckLogoSize: "KOTT_PUCK_LOGO_SIZE",
+      badgeText: "KOTT_BADGE_TEXT",
+      skottMode: "KOTT_SKOTT_MODE"
+    };
+
+    window.onload = () => {
+      loadBranding();
+      initGameOnce();
+    };
+
+    function loadBranding() {
+      const mainLogoData = localStorage.getItem(BRAND_KEYS.mainLogoData);
+      const puckLogoData = localStorage.getItem(BRAND_KEYS.puckLogoData);
+
+      if (mainLogoData) {
+        const mainLogo = document.getElementById("mainLogo");
+        if (mainLogo) mainLogo.src = mainLogoData;
+      }
+
+      if (puckLogoData) {
+        setPuckLogos(puckLogoData);
+      }
+
+      applySavedColor("--left-color", BRAND_KEYS.leftColor, "leftColorPicker");
+      applySavedColor("--right-color", BRAND_KEYS.rightColor, "rightColorPicker");
+      applySavedColor("--waiting-color", BRAND_KEYS.waitingColor, "waitingColorPicker");
+      applySavedColor("--accent-color", BRAND_KEYS.accentColor, "accentColorPicker");
+      applySavedColor("--app-bg", BRAND_KEYS.appBg, "bgColorPicker");
+      applySavedColor("--button-bg", BRAND_KEYS.buttonBg, "buttonColorPicker");
+
+      const savedSize = localStorage.getItem(BRAND_KEYS.puckLogoSize);
+      if (savedSize) {
+        document.documentElement.style.setProperty("--puck-logo-size", `${savedSize}px`);
+        const range = document.getElementById("puckLogoSizeRange");
+        if (range) range.value = savedSize;
+      }
+
+      const savedBadge = localStorage.getItem(BRAND_KEYS.badgeText);
+      if (savedBadge) {
+        setBadgeText(savedBadge, false);
+      }
+
+      const skottMode = localStorage.getItem(BRAND_KEYS.skottMode) === "true";
+      document.body.classList.toggle("skott-mode", skottMode);
+    }
+
+    function applySavedColor(cssVar, storageKey, inputId) {
+      const value = localStorage.getItem(storageKey);
+      if (!value) return;
+
+      document.documentElement.style.setProperty(cssVar, value);
+
+      const input = document.getElementById(inputId);
+      if (input) input.value = value;
+    }
+
+    function handleLogoUpload(event, type) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+
+        if (type === "mainLogoData") {
+          localStorage.setItem(BRAND_KEYS.mainLogoData, dataUrl);
+          const mainLogo = document.getElementById("mainLogo");
+          if (mainLogo) mainLogo.src = dataUrl;
+        }
+
+        if (type === "puckLogoData") {
+          localStorage.setItem(BRAND_KEYS.puckLogoData, dataUrl);
+          setPuckLogos(dataUrl);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    }
+
+    function setPuckLogos(src) {
+      ["leftPuckLogo", "rightPuckLogo", "waitingPuckLogo"].forEach(id => {
+        const img = document.getElementById(id);
+        if (!img) return;
+        img.src = src;
+        img.style.display = "block";
+      });
+    }
+
+    function setThemeColor(cssVar, value, storageName) {
+      document.documentElement.style.setProperty(cssVar, value);
+      localStorage.setItem(BRAND_KEYS[storageName], value);
+    }
+
+    function setPuckLogoSize(value) {
+      document.documentElement.style.setProperty("--puck-logo-size", `${value}px`);
+      localStorage.setItem(BRAND_KEYS.puckLogoSize, value);
+    }
+
+    function setBadgeText(value, save = true) {
+      const clean = (value || "").trim() || "KOTT";
+      const badge = document.getElementById("brandBadge");
+      const input = document.getElementById("badgeTextInput");
+      if (badge) badge.textContent = clean;
+      if (input && input.value !== clean) input.value = clean;
+      if (save) localStorage.setItem(BRAND_KEYS.badgeText, clean);
+    }
+
+    function showGearTab(tabId) {
+      ["rulesTab", "customizeTab"].forEach(id => {
+        const tab = document.getElementById(id);
+        if (tab) tab.style.display = id === tabId ? "block" : "none";
+      });
+    }
+
+    function applySmoothieKingTheme() {
+      setThemeColor("--left-color", "#ed1c24", "leftColor");
+      setThemeColor("--right-color", "#fff200", "rightColor");
+      setThemeColor("--waiting-color", "#22ff22", "waitingColor");
+      setThemeColor("--accent-color", "#ed1c24", "accentColor");
+      setThemeColor("--app-bg", "#101010", "appBg");
+      setThemeColor("--button-bg", "#3d3d3d", "buttonBg");
+
+      syncColorPicker("leftColorPicker", "#ed1c24");
+      syncColorPicker("rightColorPicker", "#fff200");
+      syncColorPicker("waitingColorPicker", "#22ff22");
+      syncColorPicker("accentColorPicker", "#ed1c24");
+      syncColorPicker("bgColorPicker", "#101010");
+      syncColorPicker("buttonColorPicker", "#3d3d3d");
+
+      setBadgeText("SKOTT");
+      document.body.classList.add("skott-mode");
+      localStorage.setItem(BRAND_KEYS.skottMode, "true");
+
+      const version = document.getElementById("versionTag");
+      if (version) version.textContent = "Version beta 1.6 (SKOTT smoothie mode 👑🥤)";
+    }
+
+    function applyDefaultKottTheme() {
+      setThemeColor("--left-color", "#ff0000", "leftColor");
+      setThemeColor("--right-color", "#ffff00", "rightColor");
+      setThemeColor("--waiting-color", "#39ff14", "waitingColor");
+      setThemeColor("--accent-color", "#ffd54f", "accentColor");
+      setThemeColor("--app-bg", "#111111", "appBg");
+      setThemeColor("--button-bg", "#444444", "buttonBg");
+
+      syncColorPicker("leftColorPicker", "#ff0000");
+      syncColorPicker("rightColorPicker", "#ffff00");
+      syncColorPicker("waitingColorPicker", "#39ff14");
+      syncColorPicker("accentColorPicker", "#ffd54f");
+      syncColorPicker("bgColorPicker", "#111111");
+      syncColorPicker("buttonColorPicker", "#444444");
+
+      setBadgeText("KOTT");
+      document.body.classList.remove("skott-mode");
+      localStorage.setItem(BRAND_KEYS.skottMode, "false");
+
+      const version = document.getElementById("versionTag");
+      if (version) version.textContent = "Version beta 1.6 (custom skins 👑)";
+    }
+
+    function syncColorPicker(id, value) {
+      const input = document.getElementById(id);
+      if (input) input.value = value;
+    }
+
+    function clearCustomBranding() {
+      localStorage.removeItem(BRAND_KEYS.mainLogoData);
+      localStorage.removeItem(BRAND_KEYS.puckLogoData);
+
+      const mainLogo = document.getElementById("mainLogo");
+      if (mainLogo) mainLogo.src = "Kottlogo.png";
+
+      ["leftPuckLogo", "rightPuckLogo", "waitingPuckLogo"].forEach(id => {
+        const img = document.getElementById(id);
+        if (!img) return;
+        img.removeAttribute("src");
+        img.style.display = "none";
+      });
+    }
+
+    function clearAllBranding() {
+      Object.values(BRAND_KEYS).forEach(key => localStorage.removeItem(key));
+      clearCustomBranding();
+      applyDefaultKottTheme();
+      setPuckLogoSize(74);
+      const range = document.getElementById("puckLogoSizeRange");
+      if (range) range.value = 74;
+    }
 
     function initGameOnce() {
       let nameList = [];
@@ -521,7 +1008,6 @@
         }
       }
 
-      // Initialize queue, scores, blue shell counters
       playerQueue = [...nameList];
       scores = {};
       blueShells = {};
@@ -600,8 +1086,8 @@
 
     function score(side) {
       if (gameOver) return;
-        // mini puck confetti on scoring tap
-  launchPuckConfettiBurst(side === 'left' ? 'leftBox' : 'rightBox');
+
+      launchPuckConfettiBurst(side === 'left' ? 'leftBox' : 'rightBox');
 
       if (!firstScoreOccurred) {
         firstScoreOccurred = true;
@@ -621,14 +1107,11 @@
       const loser = side === 'left' ? rightPlayer : leftPlayer;
 
       const loserWasAtSix = scores[loser] === 6;
-
-      // scorer gets the point
       scores[scorer]++;
 
       const timeStamp = formatTime(timer);
 
       if (loserWasAtSix) {
-        // blue shell trigger
         scores[loser] = 0;
         blueShells[scorer] = (blueShells[scorer] || 0) + 1;
         log.push(`${timeStamp} - ${scorer} scored on ${loser} and triggered a blue shell. ${scorer} collects a shell.`);
@@ -705,10 +1188,9 @@
     function checkWinner() {
       const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
 
-      // Blue shell win condition: first to collect 3
       const blueShellCandidates = allPlayers.filter(p => (blueShells[p] || 0) >= 3);
       if (blueShellCandidates.length > 0) {
-        const blueShellWinner = blueShellCandidates[0]; // first in rotation with 3 shells
+        const blueShellWinner = blueShellCandidates[0];
 
         clearInterval(timerInterval);
         gameOver = true;
@@ -725,7 +1207,6 @@
         return;
       }
 
-      // Normal 7 point win condition
       for (const player of allPlayers) {
         if (scores[player] >= 7) {
           clearInterval(timerInterval);
@@ -777,7 +1258,7 @@
       scores[name] = 0;
       blueShells[name] = 0;
       playerQueue.push(name);
-      log.push(`${formatTime(timer)} – ${name} added to the rotation.`);
+      log.push(`${formatTime(timer)} - ${name} added to the rotation.`);
       updateUI();
     }
 
@@ -798,7 +1279,7 @@
       playerQueue = playerQueue.filter(p => p !== name);
       delete scores[name];
       delete blueShells[name];
-      log.push(`${formatTime(timer)} – ${name} removed from the rotation.`);
+      log.push(`${formatTime(timer)} - ${name} removed from the rotation.`);
       updateUI();
     }
 
@@ -829,7 +1310,11 @@
         winnerName.toUpperCase()
       ];
 
-      for (let i = 0; i < 6; i++) {
+      if (document.body.classList.contains('skott-mode')) {
+        words.splice(1, 0, 'SKOTT', 'SMOOTH');
+      }
+
+      for (let i = 0; i < 7; i++) {
         const wordEl = document.createElement('div');
         wordEl.className = 'graffiti-word';
         wordEl.textContent = words[i % words.length];
@@ -845,54 +1330,46 @@
     }
 
     function launchWinEffects(winnerName) {
-      // Blue shell explosions on both pucks
       launchBlueShellFireworks('leftBox');
       launchBlueShellFireworks('rightBox');
       launchBlueShellFireworks('waitingBox');
-
-      // Graffiti overlay
       launchGraffitiExplosion(winnerName);
     }
 
-function launchPuckConfettiBurst(targetBoxId) {
-  const box = document.getElementById(targetBoxId);
-  if (!box) return;
+    function launchPuckConfettiBurst(targetBoxId) {
+      const box = document.getElementById(targetBoxId);
+      if (!box) return;
 
-  const rect = box.getBoundingClientRect();
-  const cx = rect.width / 2;
-  const cy = rect.height / 2;
+      const rect = box.getBoundingClientRect();
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const count = 18;
 
-  const count = 18;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'puck-confetti';
 
-  for (let i = 0; i < count; i++) {
-    const p = document.createElement('div');
-    p.className = 'puck-confetti';
+        const startX = cx + (Math.random() - 0.5) * 24;
+        const startY = cy + (Math.random() - 0.5) * 24;
+        const dx = (Math.random() - 0.5) * 220;
+        const dy = (Math.random() * 180) + 40;
 
-    // start near center with a little randomness
-    const startX = cx + (Math.random() - 0.5) * 24;
-    const startY = cy + (Math.random() - 0.5) * 24;
+        p.style.left = `${startX}px`;
+        p.style.top = `${startY}px`;
+        p.style.setProperty('--dx', `${dx}px`);
+        p.style.setProperty('--dy', `${dy}px`);
+        p.style.setProperty('--rot', `${(Math.random() * 720 - 360)}deg`);
 
-    // burst outward and slightly downward
-    const dx = (Math.random() - 0.5) * 220;
-    const dy = (Math.random() * 180) + 40;
+        const s = 10 + Math.random() * 10;
+        p.style.width = `${s}px`;
+        p.style.height = `${s}px`;
+        p.style.animationDuration = `${520 + Math.random() * 220}ms`;
 
-    p.style.left = `${startX}px`;
-    p.style.top = `${startY}px`;
-    p.style.setProperty('--dx', `${dx}px`);
-    p.style.setProperty('--dy', `${dy}px`);
-    p.style.setProperty('--rot', `${(Math.random() * 720 - 360)}deg`);
+        box.appendChild(p);
+        setTimeout(() => p.remove(), 900);
+      }
+    }
 
-    // vary size a bit
-    const s = 10 + Math.random() * 10;
-    p.style.width = `${s}px`;
-    p.style.height = `${s}px`;
-    p.style.animationDuration = `${520 + Math.random() * 220}ms`;
-
-    box.appendChild(p);
-    setTimeout(() => p.remove(), 900);
-  }
-}
-    
     function swapSides() {
       const confirmSwap = confirm("Are you sure you want to swap sides?");
       if (!confirmSwap) return;
@@ -901,73 +1378,63 @@ function launchPuckConfettiBurst(targetBoxId) {
       leftPlayer = rightPlayer;
       rightPlayer = temp;
 
-      log.push(`${formatTime(timer)} – 🔄 Sides swapped: ${leftPlayer} is now on the left, ${rightPlayer} on the right.`);
+      log.push(`${formatTime(timer)} - 🔄 Sides swapped: ${leftPlayer} is now on the left, ${rightPlayer} on the right.`);
 
       updateUI();
     }
 
-function shuffleArray(arr) {
-  // Fisher-Yates
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-    
+    function shuffleArray(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
     function restartSamePlayers() {
-  const confirmRestart = confirm("Restart game with the same players?\n\nThis resets scores, shells, log, and timer.");
-  if (!confirmRestart) return;
+      const confirmRestart = confirm("Restart game with the same players?\n\nThis resets scores, shells, log, and timer.");
+      if (!confirmRestart) return;
 
-  // Second step in the popup flow:
-  // OK = randomize names/order
-  // Cancel = keep current order
-  const randomize = confirm(
-    "Randomize player order too?\n\nOK = Randomize\nCancel = Keep current order"
-  );
+      const randomize = confirm(
+        "Randomize player order too?\n\nOK = Randomize\nCancel = Keep current order"
+      );
 
-  // Snapshot current rotation order exactly as shown
-  const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
+      const allPlayers = [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue];
 
-  // Build the new queue
-  playerQueue = [...allPlayers];
-  if (randomize) shuffleArray(playerQueue);
+      playerQueue = [...allPlayers];
+      if (randomize) shuffleArray(playerQueue);
 
-  // Hard reset match state (but keep the same name list)
-  scores = {};
-  blueShells = {};
-  log = [];
-  gameStateHistory = [];
-  firstScoreOccurred = false;
-  gameOver = false;
+      scores = {};
+      blueShells = {};
+      log = [];
+      gameStateHistory = [];
+      firstScoreOccurred = false;
+      gameOver = false;
 
-  // Re deal top 3
-  leftPlayer = playerQueue.shift();
-  rightPlayer = playerQueue.shift();
-  waitingPlayer = playerQueue.shift();
+      leftPlayer = playerQueue.shift();
+      rightPlayer = playerQueue.shift();
+      waitingPlayer = playerQueue.shift();
 
-  // Initialize per player state
-  for (const name of [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue]) {
-    scores[name] = 0;
-    blueShells[name] = 0;
-  }
+      for (const name of [leftPlayer, rightPlayer, waitingPlayer, ...playerQueue]) {
+        scores[name] = 0;
+        blueShells[name] = 0;
+      }
 
-  // Reset timer
-  timer = 0;
-  clearInterval(timerInterval);
-  timerInterval = setInterval(() => {
-    timer++;
-    document.getElementById('timer').textContent = formatTime(timer);
-  }, 1000);
+      timer = 0;
+      document.getElementById('timer').textContent = formatTime(timer);
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timer++;
+        document.getElementById('timer').textContent = formatTime(timer);
+      }, 1000);
 
-  // Swap button comes back until first score happens
-  document.getElementById('swapBtn').style.display = 'inline-block';
+      document.getElementById('swapBtn').style.display = 'inline-block';
+      document.getElementById('shareResultsBtn').style.display = 'none';
 
-  // Optional: leave a breadcrumb in the log
-  log.push(`${formatTime(timer)} – Restarted game (${randomize ? "randomized order" : "same order"}).`);
+      log.push(`${formatTime(timer)} - Restarted game (${randomize ? "randomized order" : "same order"}).`);
 
-  updateUI();
-}
+      updateUI();
+    }
 
     function toggleRules() {
       const panel = document.getElementById('rulesPanel');
