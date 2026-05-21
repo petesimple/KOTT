@@ -261,22 +261,6 @@
       filter: drop-shadow(0 6px 14px rgba(0,0,0,0.45));
     }
 
-    .brand-badge {
-      display: none;
-      padding: 0.28em 0.7em;
-      border-radius: 999px;
-      background: var(--brand-red);
-      color: #fff;
-      font-weight: 900;
-      letter-spacing: 0.04em;
-      transform: rotate(-2deg);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.35);
-    }
-
-    body.skott-mode .brand-badge {
-      display: inline-block;
-    }
-
     .timer-row {
       margin-top: 0.5em;
       font-size: 1.4em;
@@ -355,10 +339,6 @@
       .logo-center {
         width: 90px;
         min-width: 80px;
-      }
-
-      .brand-badge {
-        font-size: 0.75em;
       }
 
       button {
@@ -630,9 +610,7 @@
     </div>
 
     <div class="logo-center">
-      <img id="mainLogo" src="Kottlogo.png" alt="King of the Table Logo">
-      <div class="brand-badge" id="brandBadge">SKOTT</div>
-    </div>
+      <img id="mainLogo" src="Kottlogo.png" alt="King of the Table Logo">    </div>
 
     <div class="player-box" id="rightBox" onclick="score('right')">
       <div class="puck-inner"></div>
@@ -718,11 +696,6 @@
           </label>
 
           <label>
-            Badge text
-            <input type="text" id="badgeTextInput" value="SKOTT" maxlength="18" oninput="setBadgeText(this.value)">
-          </label>
-
-          <label>
             Left puck color
             <input type="color" id="leftColorPicker" value="#ff0000" onchange="setThemeColor('--left-color', this.value, 'leftColor')">
           </label>
@@ -756,11 +729,14 @@
             Puck logo size
             <input type="range" id="puckLogoSizeRange" min="40" max="120" value="74" oninput="setPuckLogoSize(this.value)">
           </label>
+
+          <label>
+            Main logo size
+            <input type="range" id="mainLogoSizeRange" min="80" max="320" value="190" oninput="setMainLogoSize(this.value)">
+          </label>
         </div>
 
-        <div class="custom-actions">
-          <button type="button" onclick="applySmoothieKingTheme()">SKOTT Theme</button>
-          <button type="button" onclick="applyDefaultKottTheme()">Default KOTT</button>
+        <div class="custom-actions">          <button type="button" onclick="applyDefaultKottTheme()">Default KOTT</button>
           <button type="button" onclick="clearCustomBranding()">Clear Logos</button>
           <button type="button" onclick="clearAllBranding()">Full Reset</button>
         </div>
@@ -770,7 +746,7 @@
     </div>
   </div>
 
-  <p id="versionTag">Version beta 1.6 (custom skins 👑)</p>
+  <p id="versionTag">Version beta 1.6.1 (custom logos 👑)</p>
   <div class="timeout" id="timeoutDisplay"></div>
   <div class="log" id="log"></div>
 
@@ -800,8 +776,7 @@
       appBg: "KOTT_APP_BG",
       buttonBg: "KOTT_BUTTON_BG",
       puckLogoSize: "KOTT_PUCK_LOGO_SIZE",
-      badgeText: "KOTT_BADGE_TEXT",
-      skottMode: "KOTT_SKOTT_MODE"
+      mainLogoSize: "KOTT_MAIN_LOGO_SIZE"
     };
 
     window.onload = () => {
@@ -836,13 +811,12 @@
         if (range) range.value = savedSize;
       }
 
-      const savedBadge = localStorage.getItem(BRAND_KEYS.badgeText);
-      if (savedBadge) {
-        setBadgeText(savedBadge, false);
+      const savedMainLogoSize = localStorage.getItem(BRAND_KEYS.mainLogoSize);
+      if (savedMainLogoSize) {
+        document.documentElement.style.setProperty("--main-logo-max-width", `${savedMainLogoSize}px`);
+        const range = document.getElementById("mainLogoSizeRange");
+        if (range) range.value = savedMainLogoSize;
       }
-
-      const skottMode = localStorage.getItem(BRAND_KEYS.skottMode) === "true";
-      document.body.classList.toggle("skott-mode", skottMode);
     }
 
     function applySavedColor(cssVar, storageKey, inputId) {
@@ -897,14 +871,9 @@
       document.documentElement.style.setProperty("--puck-logo-size", `${value}px`);
       localStorage.setItem(BRAND_KEYS.puckLogoSize, value);
     }
-
-    function setBadgeText(value, save = true) {
-      const clean = (value || "").trim() || "KOTT";
-      const badge = document.getElementById("brandBadge");
-      const input = document.getElementById("badgeTextInput");
-      if (badge) badge.textContent = clean;
-      if (input && input.value !== clean) input.value = clean;
-      if (save) localStorage.setItem(BRAND_KEYS.badgeText, clean);
+    function setMainLogoSize(value) {
+      document.documentElement.style.setProperty("--main-logo-max-width", `${value}px`);
+      localStorage.setItem(BRAND_KEYS.mainLogoSize, value);
     }
 
     function showGearTab(tabId) {
@@ -913,30 +882,6 @@
         if (tab) tab.style.display = id === tabId ? "block" : "none";
       });
     }
-
-    function applySmoothieKingTheme() {
-      setThemeColor("--left-color", "#ed1c24", "leftColor");
-      setThemeColor("--right-color", "#fff200", "rightColor");
-      setThemeColor("--waiting-color", "#22ff22", "waitingColor");
-      setThemeColor("--accent-color", "#ed1c24", "accentColor");
-      setThemeColor("--app-bg", "#101010", "appBg");
-      setThemeColor("--button-bg", "#3d3d3d", "buttonBg");
-
-      syncColorPicker("leftColorPicker", "#ed1c24");
-      syncColorPicker("rightColorPicker", "#fff200");
-      syncColorPicker("waitingColorPicker", "#22ff22");
-      syncColorPicker("accentColorPicker", "#ed1c24");
-      syncColorPicker("bgColorPicker", "#101010");
-      syncColorPicker("buttonColorPicker", "#3d3d3d");
-
-      setBadgeText("SKOTT");
-      document.body.classList.add("skott-mode");
-      localStorage.setItem(BRAND_KEYS.skottMode, "true");
-
-      const version = document.getElementById("versionTag");
-      if (version) version.textContent = "Version beta 1.6 (SKOTT smoothie mode 👑🥤)";
-    }
-
     function applyDefaultKottTheme() {
       setThemeColor("--left-color", "#ff0000", "leftColor");
       setThemeColor("--right-color", "#ffff00", "rightColor");
@@ -952,12 +897,8 @@
       syncColorPicker("bgColorPicker", "#111111");
       syncColorPicker("buttonColorPicker", "#444444");
 
-      setBadgeText("KOTT");
-      document.body.classList.remove("skott-mode");
-      localStorage.setItem(BRAND_KEYS.skottMode, "false");
-
       const version = document.getElementById("versionTag");
-      if (version) version.textContent = "Version beta 1.6 (custom skins 👑)";
+      if (version) version.textContent = "Version beta 1.6.1 (custom logos 👑)";
     }
 
     function syncColorPicker(id, value) {
@@ -985,8 +926,11 @@
       clearCustomBranding();
       applyDefaultKottTheme();
       setPuckLogoSize(74);
-      const range = document.getElementById("puckLogoSizeRange");
-      if (range) range.value = 74;
+      setMainLogoSize(190);
+      const puckRange = document.getElementById("puckLogoSizeRange");
+      if (puckRange) puckRange.value = 74;
+      const logoRange = document.getElementById("mainLogoSizeRange");
+      if (logoRange) logoRange.value = 190;
     }
 
     function initGameOnce() {
@@ -1309,10 +1253,6 @@
         'GAME',
         winnerName.toUpperCase()
       ];
-
-      if (document.body.classList.contains('skott-mode')) {
-        words.splice(1, 0, 'SKOTT', 'SMOOTH');
-      }
 
       for (let i = 0; i < 7; i++) {
         const wordEl = document.createElement('div');
